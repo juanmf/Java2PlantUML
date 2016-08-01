@@ -1,5 +1,7 @@
 package com.github.juanmf.java2plant.render;
 
+import com.github.juanmf.java2plant.render.filters.Filter;
+import com.github.juanmf.java2plant.render.filters.Filters;
 import com.github.juanmf.java2plant.structure.Relation;
 
 import java.util.Set;
@@ -10,17 +12,18 @@ import java.util.Set;
 public class PlantRenderer {
     private final Set<String> types;
     private final Set<Relation> relations;
-    private final Filter filter;
+    private final Filter<String> classesFilter;
+    private final Filter<Class<? extends Relation>> relationsFilter;
 
     public PlantRenderer(Set<String> types, Set<Relation> relations) {
-        this(types, relations, Filters.FILTER_ALLOW_ALL);
+        this(types, relations, Filters.allowAllRelations(),Filters.allowAllClasses());
     }
 
-    public PlantRenderer(Set<String> types, Set<Relation> relations, Filter filter) {
+    public PlantRenderer(Set<String> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) {
         this.types = types;
         this.relations = relations;
-        this.filter = filter;
-
+        this.relationsFilter = relationsFilter;
+        this.classesFilter = classesFilter;
     }
 
     /**
@@ -51,8 +54,8 @@ public class PlantRenderer {
      * @param sb
      */
     protected void addRelations(StringBuilder sb) {
-        for (Relation r : relations) {
-            if (filter.isForbidenRelation(r.getClass())) {
+    	for (Relation r : relations) {
+            if (!relationsFilter.satisfy(r.getClass())) {
                 continue;
             }
             sb.append(r.toString()).append("\n");
@@ -67,6 +70,9 @@ public class PlantRenderer {
     protected void addClasses(StringBuilder sb) {
         try {
             for (String c : types) {
+                if (!classesFilter.satisfy(c)){
+                	continue;
+                }
                 Class<?> aClass = Class.forName(c);
                 sb.append(aClass.toString()).append("\n");
             }
