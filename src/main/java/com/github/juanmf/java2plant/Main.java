@@ -10,6 +10,6 @@ public class Main {
 
     public static void main(String[] args) throws ClassNotFoundException {
         String thePackage = 1 == args.length ? args[0] : "com.github.juanmf";
-        System.out.println(Parser.parse(thePackage, Filters.FILTER_FORBID_EXTENSION, Filters.allowAllClasses()));
+        System.out.println(Parser.parse(thePackage, Filters.FILTER_FORBID_EXTENSION, Filters.FILTER_ALLOW_ALL_CLASSES));
     }
 }

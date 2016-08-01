@@ -16,7 +16,7 @@ public class PlantRenderer {
     private final Filter<Class<? extends Relation>> relationsFilter;
 
     public PlantRenderer(Set<String> types, Set<Relation> relations) {
-        this(types, relations, Filters.allowAllRelations(),Filters.allowAllClasses());
+        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS,Filters.FILTER_ALLOW_ALL_CLASSES);
     }
 
     public PlantRenderer(Set<String> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) {
