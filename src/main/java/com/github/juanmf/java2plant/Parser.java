@@ -1,7 +1,6 @@
 package com.github.juanmf.java2plant;
 
 import com.github.juanmf.java2plant.render.Filter;
-import com.github.juanmf.java2plant.render.Filters;
 import com.github.juanmf.java2plant.render.PlantRenderer;
 import com.github.juanmf.java2plant.structure.Aggregation;
 import com.github.juanmf.java2plant.structure.Extension;
@@ -14,8 +13,19 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Iterates over all types available at runtime, under given package, creating:
@@ -28,6 +38,7 @@ import java.util.*;
  *
  * @author juanmf@gmail.com
  */
+
 public class Parser {
 
     /**
