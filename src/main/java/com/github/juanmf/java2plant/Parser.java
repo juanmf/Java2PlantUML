@@ -237,10 +237,10 @@ public class Parser {
     }
 
     protected static Set<String> getTypeParams(ParameterizedType f) {
-        Set<String> typeVars = new HashSet<String>();
+        Set<String> typeVars = new HashSet<>();
         Type[] actualTypeArguments = f.getActualTypeArguments();
-        for (Type t: actualTypeArguments  ) {
-            typeVars.add(t.toString());
+        for (Type t: actualTypeArguments) {
+            typeVars.add(t.toString().replace("class ", ""));
         }
         return typeVars;
     }

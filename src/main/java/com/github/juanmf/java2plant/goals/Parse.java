@@ -43,7 +43,7 @@ public class Parse extends AbstractMojo {
             URLClassLoader loader = getLoader();
             getLog().debug("loader URLs: " + Arrays.toString(loader.getURLs()));
 
-            getLog().info("Following is the PlantUML src: \n" + Parser.parse(thePackage, Filters.FILTER_ALLOW_ALL, loader));
+            getLog().info("Following is the PlantUML src: \n" + Parser.parse(thePackage, Filters.FILTER_FORBID_USES, loader));
         } catch (DependencyResolutionRequiredException e) {
             throw new MojoExecutionException("Something went wrong", e);
         }

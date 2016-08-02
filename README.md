@@ -84,3 +84,11 @@ classes of your Diagram.
 You might want to remove the plugin markup from your pom after you got the desired Diagrams.
 
 
+TODO
+====
+ * Add Filters to CLI params
+ * hide some relations, choose toTypes to hide in relation fromType --> toType.
+ * show some composition relations as attrs inside the class, e.g. java.lang.* 
+ instead of arrows.
+ * represent Type parameters in class definitions i.e. public class SelectFieldFactory<D extends SelectFieldDefinition>
+ 
