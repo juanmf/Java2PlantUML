@@ -40,6 +40,7 @@ import java.util.Set;
  */
 
 public class Parser {
+    public static ClassLoader CLASS_LOADER = null;
 
     /**
      * Parse the given package recursively, then iterates over found types to fetch their relations.
@@ -48,14 +49,24 @@ public class Parser {
      *
      * @return PlantUML src code of a Collaboration Diagram for the types found in package and all
      * related Types.
-     *
-     * @throws ClassNotFoundException
      */
-    public static String parse(String packageToPase, Filter filter) throws ClassNotFoundException {
-        List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+    public static String parse(String packageToPase, Filter filter) {
+        List<ClassLoader> classLoadersList = new LinkedList<>();
+        return parse(packageToPase, filter, classLoadersList);
+    }
+
+    public static String parse(String packageToPase, Filter filter, ClassLoader classLoader)
+    {
+        List<ClassLoader> classLoadersList = new LinkedList<>();
+        classLoadersList.add(classLoader);
+        return parse(packageToPase, filter, classLoadersList);
+    }
+
+    public static String parse(String packageToPase, Filter filter, List<ClassLoader> classLoadersList)
+    {
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
-
+        CLASS_LOADER = classLoadersList.get(0);
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner())
                 .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
@@ -64,9 +75,13 @@ public class Parser {
         Set<String> types = reflections.getAllTypes();
         Set<Relation> relations = new HashSet<Relation>();
         for (String type: types) {
-            addFromTypeRelations(relations, Class.forName(type));
+            try {
+                addFromTypeRelations(relations, Class.forName(type, true, CLASS_LOADER));
+            } catch (ClassNotFoundException e) {
+                System.out.println("ClassNotFoundException: " + e.getMessage());
+                continue;
+            }
         }
-
         return new PlantRenderer(types, relations, filter).render();
     }
 
@@ -180,7 +195,7 @@ public class Parser {
 
     protected static String getSimpleName(String fqcn) {
         int lastDotidx = fqcn.lastIndexOf(".");
-        String simpleName = -1 == lastDotidx ? fqcn : fqcn.substring(lastDotidx);
+        String simpleName = -1 == lastDotidx ? fqcn : fqcn.substring(lastDotidx + 1);
         return simpleName;
     }
 

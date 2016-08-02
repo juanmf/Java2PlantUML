@@ -1,5 +1,6 @@
 package com.github.juanmf.java2plant.render;
 
+import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.structure.Relation;
 
 import java.util.Set;
@@ -65,13 +66,14 @@ public class PlantRenderer {
      * @param sb
      */
     protected void addClasses(StringBuilder sb) {
-        try {
-            for (String c : types) {
-                Class<?> aClass = Class.forName(c);
+        for (String c : types) {
+            try {
+                Class<?> aClass = Class.forName(c, true, Parser.CLASS_LOADER);
                 sb.append(aClass.toString()).append("\n");
+            } catch (ClassNotFoundException e) {
+                System.out.println("ClassNotFoundException: " + e.getMessage());
+                continue;
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 }
