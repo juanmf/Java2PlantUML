@@ -1,5 +1,6 @@
 package com.github.juanmf.java2plant;
 
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -39,7 +40,9 @@ import com.github.juanmf.java2plant.structure.Use;
  *
  * @author juanmf@gmail.com
  */
+
 public class Parser {
+    public static ClassLoader CLASS_LOADER = null;
 
     /**
      * Parse the given package recursively, then iterates over found types to fetch their relations.
@@ -48,14 +51,24 @@ public class Parser {
      *
      * @return PlantUML src code of a Collaboration Diagram for the types found in package and all
      * related Types.
-     *
-     * @throws ClassNotFoundException
      */
     public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) throws ClassNotFoundException {
-        List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+        List<ClassLoader> classLoadersList = new LinkedList<>();
+        return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
+    }
+
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter, ClassLoader classLoader)
+    {
+        List<ClassLoader> classLoadersList = new LinkedList<>();
+        classLoadersList.add(classLoader);
+        return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
+    }
+
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter, List<ClassLoader> classLoadersList)
+    {
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
-
+        CLASS_LOADER = classLoadersList.get(0);
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner())
                 .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
@@ -64,9 +77,13 @@ public class Parser {
         Set<String> types = reflections.getAllTypes();
         Set<Relation> relations = new HashSet<Relation>();
         for (String type: types) {
-            addFromTypeRelations(relations, Class.forName(type));
+            try {
+                addFromTypeRelations(relations, Class.forName(type, true, CLASS_LOADER));
+            } catch (ClassNotFoundException e) {
+                System.out.println("ClassNotFoundException: " + e.getMessage());
+                continue;
+            }
         }
-
         return new PlantRenderer(types, relations, relationsFilter, classesFilter).render();
     }
 
@@ -180,7 +197,7 @@ public class Parser {
 
     protected static String getSimpleName(String fqcn) {
         int lastDotidx = fqcn.lastIndexOf(".");
-        String simpleName = -1 == lastDotidx ? fqcn : fqcn.substring(lastDotidx);
+        String simpleName = -1 == lastDotidx ? fqcn : fqcn.substring(lastDotidx + 1);
         return simpleName;
     }
 
@@ -222,10 +239,10 @@ public class Parser {
     }
 
     protected static Set<String> getTypeParams(ParameterizedType f) {
-        Set<String> typeVars = new HashSet<String>();
+        Set<String> typeVars = new HashSet<>();
         Type[] actualTypeArguments = f.getActualTypeArguments();
-        for (Type t: actualTypeArguments  ) {
-            typeVars.add(t.toString());
+        for (Type t: actualTypeArguments) {
+            typeVars.add(t.toString().replace("class ", ""));
         }
         return typeVars;
     }
