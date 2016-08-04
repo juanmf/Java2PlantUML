@@ -1,17 +1,5 @@
 package com.github.juanmf.java2plant;
 
-import com.github.juanmf.java2plant.render.Filter;
-import com.github.juanmf.java2plant.render.PlantRenderer;
-import com.github.juanmf.java2plant.structure.Aggregation;
-import com.github.juanmf.java2plant.structure.Extension;
-import com.github.juanmf.java2plant.structure.Relation;
-import com.github.juanmf.java2plant.structure.Use;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -26,6 +14,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+
+import com.github.juanmf.java2plant.render.PlantRenderer;
+import com.github.juanmf.java2plant.render.filters.Filter;
+import com.github.juanmf.java2plant.structure.Aggregation;
+import com.github.juanmf.java2plant.structure.Extension;
+import com.github.juanmf.java2plant.structure.Relation;
+import com.github.juanmf.java2plant.structure.Use;
 
 /**
  * Iterates over all types available at runtime, under given package, creating:
@@ -50,19 +52,19 @@ public class Parser {
      * @return PlantUML src code of a Collaboration Diagram for the types found in package and all
      * related Types.
      */
-    public static String parse(String packageToPase, Filter filter) {
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) throws ClassNotFoundException {
         List<ClassLoader> classLoadersList = new LinkedList<>();
-        return parse(packageToPase, filter, classLoadersList);
+        return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
     }
 
-    public static String parse(String packageToPase, Filter filter, ClassLoader classLoader)
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter, ClassLoader classLoader)
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(classLoader);
-        return parse(packageToPase, filter, classLoadersList);
+        return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
     }
 
-    public static String parse(String packageToPase, Filter filter, List<ClassLoader> classLoadersList)
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter, List<ClassLoader> classLoadersList)
     {
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
@@ -82,7 +84,7 @@ public class Parser {
                 continue;
             }
         }
-        return new PlantRenderer(types, relations, filter).render();
+        return new PlantRenderer(types, relations, relationsFilter, classesFilter).render();
     }
 
     /**

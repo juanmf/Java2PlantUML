@@ -1,5 +1,7 @@
 package com.github.juanmf.java2plant.render;
 
+import com.github.juanmf.java2plant.render.filters.Filter;
+import com.github.juanmf.java2plant.render.filters.Filters;
 import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.structure.Aggregation;
 import com.github.juanmf.java2plant.structure.Extension;
@@ -20,8 +22,9 @@ import java.util.regex.Pattern;
 public class PlantRenderer {
     private final Set<String> types;
     private final Set<Relation> relations;
+    private final Filter<String> classesFilter;
+    private final Filter<Class<? extends Relation>> relationsFilter;
     private final Set<Pattern> toTypesToShowAsMember;
-    private final Filter filter;
     private static final Map<Class<? extends Relation>, MemberPrinter> memberPrinters = new HashMap<>();
 
     static {
@@ -31,13 +34,14 @@ public class PlantRenderer {
     }
 
     public PlantRenderer(Set<String> types, Set<Relation> relations) {
-        this(types, relations, Filters.FILTER_ALLOW_ALL);
+        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS,Filters.FILTER_ALLOW_ALL_CLASSES);
     }
 
-    public PlantRenderer(Set<String> types, Set<Relation> relations, Filter filter) {
+    public PlantRenderer(Set<String> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) {
         this.types = types;
         this.relations = relations;
-        this.filter = filter;
+        this.relationsFilter = relationsFilter;
+        this.classesFilter = classesFilter;
         toTypesToShowAsMember = new HashSet<>();
         toTypesToShowAsMember.add(Pattern.compile("^java.lang.*"));
     }
@@ -72,8 +76,8 @@ public class PlantRenderer {
      * @param sb
      */
     protected void addRelations(StringBuilder sb) {
-        for (Relation r : relations) {
-            if (filter.isForbidenRelation(r.getClass())) {
+    	for (Relation r : relations) {
+            if (!relationsFilter.satisfy(r.getClass())) {
                 continue;
             }
             if (r.getFromType().contains("$")) {
@@ -90,7 +94,10 @@ public class PlantRenderer {
      */
     protected void addClasses(StringBuilder sb) {
         for (String c : types) {
-            try {
+        	if (!classesFilter.satisfy(c)){
+            	continue;
+            }
+        	try {
                 Class<?> aClass = Class.forName(c, true, Parser.CLASS_LOADER);
                 addClass(sb, aClass);
             } catch (ClassNotFoundException e) {

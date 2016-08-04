@@ -1,7 +1,13 @@
 package com.github.juanmf.java2plant.goals;
 
-import com.github.juanmf.java2plant.Parser;
-import com.github.juanmf.java2plant.render.Filters;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -12,13 +18,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.github.juanmf.java2plant.Parser;
+import com.github.juanmf.java2plant.render.filters.Filters;
 
 /**
  *
@@ -43,7 +44,7 @@ public class Parse extends AbstractMojo {
             URLClassLoader loader = getLoader();
             getLog().debug("loader URLs: " + Arrays.toString(loader.getURLs()));
 
-            getLog().info("Following is the PlantUML src: \n" + Parser.parse(thePackage, Filters.FILTER_FORBID_USES, loader));
+            getLog().info("Following is the PlantUML src: \n" + Parser.parse(thePackage, Filters.FILTER_FORBID_USES, Filters.FILTER_ALLOW_ALL_CLASSES, loader));
         } catch (DependencyResolutionRequiredException e) {
             throw new MojoExecutionException("Something went wrong", e);
         }

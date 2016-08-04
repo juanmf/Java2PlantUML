@@ -72,7 +72,8 @@
             </plugin>
             <plugin>
                 <artifactId>java2PlantUML-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <!-- This version should be consistent with this pom's /project/version-->
+                <version>1.0.1</version>
                 <configuration>
                     <goalPrefix>java2PlantUML</goalPrefix>
                 </configuration>
