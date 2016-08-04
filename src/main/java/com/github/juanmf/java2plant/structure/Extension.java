@@ -1,20 +1,27 @@
 package com.github.juanmf.java2plant.structure;
 
+import java.lang.reflect.Member;
+
 /**
  * @author juanmf@gmail.com
  */
 public class Extension implements Relation {
     public static final String RELATION_TYPE_EXTENSION = " -up|> ";
-    private String from;
-    private String to;
+    private final Class<?> from;
+    private final String to;
 
-    public Extension(String from, String to) {
+    public Extension(Class<?> from, String to) {
         this.from = from;
         this.to = to;
     }
 
-    public String getFromType() {
+    public Class<?> getFromType() {
         return from;
+    }
+
+    @Override
+    public Member getOriginatingMember() {
+        return null;
     }
 
     public String getToType() {

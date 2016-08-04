@@ -35,11 +35,18 @@ public class Parse extends AbstractMojo {
     @Parameter(property = "parse.thePackage", defaultValue = "com.github.juanmf.java2plant.structure")
     private String thePackage;
 
+    /**
+     * The package to parse for Types and Associations
+     */
+    @Parameter(property = "parse.filter", defaultValue = "com.github.juanmf.java2plant.structure")
+    private String filter;
+
     @Component
     private MavenProject project;
 
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
+
         try {
             URLClassLoader loader = getLoader();
             getLog().debug("loader URLs: " + Arrays.toString(loader.getURLs()));

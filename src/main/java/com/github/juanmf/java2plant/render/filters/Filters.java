@@ -13,18 +13,17 @@ public class Filters {
     public static final ForbiddenFilter<Class<? extends Relation>> FILTER_FORBID_AGGREGATION;
     public static final ForbiddenFilter<Class<? extends Relation>> FILTER_FORBID_EXTENSION;
     public static final ForbiddenFilter<Class<? extends Relation>> FILTER_ALLOW_ALL_RELATIONS;
-    public static final ForbiddenFilter<String> FILTER_ALLOW_ALL_CLASSES;
+    public static final ForbiddenFilter<Class<?>> FILTER_ALLOW_ALL_CLASSES;
 
     static {
         FILTER_FORBID_USES = new ForbiddenFilter<Class<? extends Relation>>();
         FILTER_FORBID_AGGREGATION = new ForbiddenFilter<Class<? extends Relation>>();
         FILTER_FORBID_EXTENSION =  new ForbiddenFilter<Class<? extends Relation>>();
         FILTER_ALLOW_ALL_RELATIONS = new ForbiddenFilter<Class<? extends Relation>>();
-        FILTER_ALLOW_ALL_CLASSES = new ForbiddenFilter<String>();
+        FILTER_ALLOW_ALL_CLASSES = new ForbiddenFilter<Class<?>>();
 
         FILTER_FORBID_USES.addForbidenItem(Use.class);
         FILTER_FORBID_AGGREGATION.addForbidenItem(Aggregation.class);
         FILTER_FORBID_EXTENSION.addForbidenItem(Extension.class);
     }
-    
 }

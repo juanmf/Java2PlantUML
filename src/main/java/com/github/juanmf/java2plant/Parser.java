@@ -1,8 +1,8 @@
 package com.github.juanmf.java2plant;
 
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.juanmf.java2plant.util.TypesHelper;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -52,20 +53,33 @@ public class Parser {
      * @return PlantUML src code of a Collaboration Diagram for the types found in package and all
      * related Types.
      */
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) throws ClassNotFoundException {
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter,
+                               Filter<Class<?>> classesFilter) throws ClassNotFoundException
+    {
         List<ClassLoader> classLoadersList = new LinkedList<>();
         return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
     }
 
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter, ClassLoader classLoader)
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter,
+                               Filter<Class<?>> classesFilter, ClassLoader classLoader)
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(classLoader);
         return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
     }
 
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter, List<ClassLoader> classLoadersList)
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter,
+                               Filter<Class<?>> classesFilter, List<ClassLoader> classLoadersList)
     {
+        Set<Relation> relations = new HashSet<Relation>();
+        Set<Class<?>> classes = getTypes(packageToPase, classLoadersList);
+        for (Class<?> aClass : classes) {
+            addFromTypeRelations(relations, aClass);
+        }
+        return new PlantRenderer(classes, relations, relationsFilter, classesFilter).render();
+    }
+
+    private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
         CLASS_LOADER = classLoadersList.get(0);
@@ -75,16 +89,16 @@ public class Parser {
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToPase))));
 
         Set<String> types = reflections.getAllTypes();
-        Set<Relation> relations = new HashSet<Relation>();
+        Set<Class<?>> classes = new HashSet<>();
         for (String type: types) {
             try {
-                addFromTypeRelations(relations, Class.forName(type, true, CLASS_LOADER));
+                classes.add(Class.forName(type, true, CLASS_LOADER));
             } catch (ClassNotFoundException e) {
                 System.out.println("ClassNotFoundException: " + e.getMessage());
                 continue;
             }
         }
-        return new PlantRenderer(types, relations, relationsFilter, classesFilter).render();
+        return classes;
     }
 
     /**
@@ -109,7 +123,7 @@ public class Parser {
     protected static void addImplementations(Set<Relation> relations, Class<?> fromType) {
         Class<?>[] interfaces = fromType.getInterfaces();
         for (Class<?> i : interfaces) {
-            Relation anImplements = new Extension(fromType.getName(), i.getName());
+            Relation anImplements = new Extension(fromType, i.getName());
             relations.add(anImplements);
         }
     }
@@ -119,7 +133,7 @@ public class Parser {
         if (null == superclass || Object.class.equals(superclass)) {
             return;
         }
-        Relation extension = new Extension(fromType.getName(), superclass.getName());
+        Relation extension = new Extension(fromType, superclass.getName());
         relations.add(extension);
     }
 
@@ -164,11 +178,11 @@ public class Parser {
     }
 
     protected static void addConstructorUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, Constructor<?> c) {
-        String name = getSimpleName(c.getName()) + "()";
-        addUse(relations, fromType, toType, fromParameterType, name);
+        String name = TypesHelper.getSimpleName(c.getName()) + "()";
+        addUse(relations, fromType, toType, fromParameterType, c, name);
     }
 
-    protected static void addUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, String msg) {
+    protected static void addUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, Member m, String msg) {
         String toName = toType.getName();
         if (isMulti(toType)) {
             if (! toType.isArray()) {
@@ -177,7 +191,7 @@ public class Parser {
                     Set<String> typeVars = getTypeParams(pt);
                     for (String t : typeVars) {
                         msg += toName;
-                        Relation use = new Use(fromType.getName(), t, msg);
+                        Relation use = new Use(fromType, t, m, msg);
                         relations.add(use);
                     }
                     return;
@@ -186,19 +200,13 @@ public class Parser {
             toName = toType.getCanonicalName().replace("[]", "");
             msg += ": []";
         }
-        Relation use = new Use(fromType.getName(), toName, msg);
+        Relation use = new Use(fromType, toName, m, msg);
         relations.add(use);
     }
 
     protected static void addMethodUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, Method m) {
-        String name = getSimpleName(m.getName()) + "()";
-        addUse(relations, fromType, toType, fromParameterType, name);
-    }
-
-    protected static String getSimpleName(String fqcn) {
-        int lastDotidx = fqcn.lastIndexOf(".");
-        String simpleName = -1 == lastDotidx ? fqcn : fqcn.substring(lastDotidx + 1);
-        return simpleName;
+        String name = TypesHelper.getSimpleName(m.getName()) + "()";
+        addUse(relations, fromType, toType, fromParameterType, m, name);
     }
 
     protected static boolean isMulti(Class<?> delegateType) {
@@ -218,14 +226,14 @@ public class Parser {
                 Set<String> typeVars = getTypeParams(f);
                 for (String type : typeVars) {
                     Relation aggregation = new Aggregation(
-                            fromType.getName(), type, toCardinal, varName + ": " + delegateType.getName());
+                            fromType, type, f, toCardinal, varName + ": " + delegateType.getName());
                     relations.add(aggregation);
                 }
                 return;
             }
             toName = delegateType.getCanonicalName().replace("[]", "");
         }
-        Relation aggregation = new Aggregation(fromType.getName(), toName, toCardinal, varName);
+        Relation aggregation = new Aggregation(fromType, toName, f, toCardinal, varName);
         relations.add(aggregation);
     }
 

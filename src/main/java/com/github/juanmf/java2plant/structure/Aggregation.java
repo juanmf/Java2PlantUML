@@ -1,28 +1,37 @@
 package com.github.juanmf.java2plant.structure;
 
+import java.lang.reflect.Member;
+
 /**
  * @author juanmf@gmail.com
  */
 public class Aggregation implements Relation {
     public static final String RELATION_TYPE_AGGREGATION = " o-left- ";
     private final String toFieldName;
-    private final String from;
+    private final Class<?> from;
     private final String to;
     private final String toCardinal;
+    private final Member originatingMember;
 
-    public Aggregation(String from, String to, String toCardinal) {
-        this(from, to, toCardinal, null);
+    public Aggregation(Class<?> from, String to, Member originatingMember, String toCardinal) {
+        this(from, to, originatingMember, toCardinal, null);
     }
 
-    public Aggregation(String from, String to, String toCardinal, String toFieldName) {
+    public Aggregation(Class<?> from, String to, Member originatingMember, String toCardinal, String toFieldName) {
         this.from = from;
         this.to = to;
         this.toCardinal = toCardinal;
         this.toFieldName = toFieldName;
+        this.originatingMember = originatingMember;
     }
 
-    public String getFromType() {
+    public Class<?> getFromType() {
         return from;
+    }
+
+    @Override
+    public Member getOriginatingMember() {
+        return originatingMember;
     }
 
     public String getToType() {

@@ -1,26 +1,35 @@
 package com.github.juanmf.java2plant.structure;
 
+import java.lang.reflect.Member;
+
 /**
  * @author juanmf@gmail.com
  */
 public class Use implements Relation {
     public static final String RELATION_TYPE_USE = " .down.> ";
     private final String msg;
-    private String from;
-    private String to;
+    private final Class<?> from;
+    private final String to;
+    private final Member originatingMember;
 
-    public Use(String from, String to) {
-        this(from, to, null);
+    public Use(Class<?> from, String to, Member originatingMember) {
+        this(from, to, originatingMember, null);
     }
 
-    public Use(String from, String to, String msg) {
+    public Use(Class<?> from, String to, Member originatingMember, String msg) {
         this.from = from;
         this.to = to;
         this.msg = msg;
+        this.originatingMember = originatingMember;
     }
 
-    public String getFromType() {
+    public Class<?> getFromType() {
         return from;
+    }
+
+    @Override
+    public Member getOriginatingMember() {
+        return null;
     }
 
     public String getToType() {

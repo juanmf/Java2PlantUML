@@ -7,7 +7,10 @@ import com.github.juanmf.java2plant.structure.Aggregation;
 import com.github.juanmf.java2plant.structure.Extension;
 import com.github.juanmf.java2plant.structure.Relation;
 import com.github.juanmf.java2plant.structure.Use;
+import com.github.juanmf.java2plant.util.TypesHelper;
 
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,9 +23,9 @@ import java.util.regex.Pattern;
  * @author juanmf@gmail.com
  */
 public class PlantRenderer {
-    private final Set<String> types;
+    private final Set<Class<?>> types;
     private final Set<Relation> relations;
-    private final Filter<String> classesFilter;
+    private final Filter<Class<?>> classesFilter;
     private final Filter<Class<? extends Relation>> relationsFilter;
     private final Set<Pattern> toTypesToShowAsMember;
     private static final Map<Class<? extends Relation>, MemberPrinter> memberPrinters = new HashMap<>();
@@ -33,11 +36,13 @@ public class PlantRenderer {
         memberPrinters.put(Extension.class, new NullPrinter());
     }
 
-    public PlantRenderer(Set<String> types, Set<Relation> relations) {
-        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS,Filters.FILTER_ALLOW_ALL_CLASSES);
+    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations) {
+        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_ALLOW_ALL_CLASSES);
     }
 
-    public PlantRenderer(Set<String> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationsFilter, Filter<String> classesFilter) {
+    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationsFilter,
+                         Filter<Class<?>> classesFilter)
+    {
         this.types = types;
         this.relations = relations;
         this.relationsFilter = relationsFilter;
@@ -80,7 +85,7 @@ public class PlantRenderer {
             if (!relationsFilter.satisfy(r.getClass())) {
                 continue;
             }
-            if (r.getFromType().contains("$")) {
+            if (r.getFromType().getName().contains("$")) {
                 continue;
             }
             sb.append(r.toString()).append("\n");
@@ -93,17 +98,11 @@ public class PlantRenderer {
      * @param sb
      */
     protected void addClasses(StringBuilder sb) {
-        for (String c : types) {
+        for (Class<?> c : types) {
         	if (!classesFilter.satisfy(c)){
             	continue;
             }
-        	try {
-                Class<?> aClass = Class.forName(c, true, Parser.CLASS_LOADER);
-                addClass(sb, aClass);
-            } catch (ClassNotFoundException e) {
-                System.out.println("ClassNotFoundException: " + e.getMessage());
-                continue;
-            }
+            addClass(sb, c);
         }
     }
 
@@ -122,7 +121,7 @@ public class PlantRenderer {
         Set<String> methods = new HashSet<>();
         while (ri.hasNext()) {
             Relation relation = ri.next();
-            if (relation.getFromType().equals(aClass.getName())
+            if (relation.getFromType().equals(aClass)
                     && matches(relation.getToType(), toTypesToShowAsMember)) {
                 System.out.println(String.format("%s has a relation to %s to be shown as member", aClass.getName(), relation.getToType()));
                 memberPrinters.get(relation.getClass()).addMember(relation, fields, methods);
@@ -155,7 +154,15 @@ public class PlantRenderer {
     static class FieldPrinter implements MemberPrinter {
         @Override
         public void addMember(Relation r, Set<String> fields, Set<String> methods) {
-            String msg = r.getMessage();
+            Member m = r.getOriginatingMember();
+            if (m.isSynthetic()) {
+                return;
+            }
+            if (null == m) {
+                System.out.println("Nooooouuuuu: " + r);
+            }
+            String msg = String.format("%s %s : %s", Modifiers.forModifier(m.getModifiers()).toString(), m.getName(),
+                    TypesHelper.getSimpleName(r.getToType()));
             fields.add(msg);
         }
     }
@@ -172,6 +179,41 @@ public class PlantRenderer {
         public void addMember(Relation r, Set<String> fields, Set<String> methods) {
             String msg = r.getMessage();
             methods.add(msg);
+        }
+    }
+
+    private enum Modifiers {
+        PUBLIC("+"),
+        PROTECTED("#"),
+        PRIVATE("-"),
+        DEFAULT("~");
+
+        String prefix;
+
+        Modifiers(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public static Modifiers forModifier (int memberModifier) {
+            Modifiers m = null;
+            if (Modifier.isPrivate(memberModifier)) {
+                m = PRIVATE;
+            }
+            if (Modifier.isProtected(memberModifier)) {
+                m = PROTECTED;
+            }
+            if (Modifier.isPublic(memberModifier)) {
+                m = PUBLIC;
+            }
+            if (null == m) {
+                m = DEFAULT;
+            }
+            return m;
+        }
+
+        @Override
+        public String toString() {
+            return prefix + " ";
         }
     }
 }
