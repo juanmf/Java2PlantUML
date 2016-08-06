@@ -44,6 +44,21 @@ public class Parse extends AbstractMojo {
     @Component
     private MavenProject project;
 
+    /**
+     * Send thePackage and a convenient fixed set of filters to Parser and outputs Parser's result
+     *
+     * Todo: allow filters to be set from CLI
+     *
+     * <code>
+     * // A very permisive filter configuration:
+     * getLog().info("Following is the PlantUML src: \n" + Parser.parse(
+     *         thePackage, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_ALLOW_ALL_CLASSES, loader,
+     *         Filters.FILTER_RELATION_ALLOW_ALL));
+
+     * </code>
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     */
     @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -51,7 +66,10 @@ public class Parse extends AbstractMojo {
             URLClassLoader loader = getLoader();
             getLog().debug("loader URLs: " + Arrays.toString(loader.getURLs()));
 
-            getLog().info("Following is the PlantUML src: \n" + Parser.parse(thePackage, Filters.FILTER_FORBID_USES, Filters.FILTER_ALLOW_ALL_CLASSES, loader));
+            getLog().info("Following is the PlantUML src: \n" + Parser.parse(
+                    thePackage, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_FORBID_ANONIMOUS, loader,
+                    Filters.FILTER_CHAIN_RELATION_STANDARD));
+
         } catch (DependencyResolutionRequiredException e) {
             throw new MojoExecutionException("Something went wrong", e);
         }

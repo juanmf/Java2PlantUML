@@ -1,5 +1,6 @@
 package com.github.juanmf.java2plant.render;
 
+import com.github.juanmf.java2plant.render.filters.ChainFilter;
 import com.github.juanmf.java2plant.render.filters.Filter;
 import com.github.juanmf.java2plant.render.filters.Filters;
 import com.github.juanmf.java2plant.Parser;
@@ -9,11 +10,18 @@ import com.github.juanmf.java2plant.structure.Relation;
 import com.github.juanmf.java2plant.structure.Use;
 import com.github.juanmf.java2plant.util.TypesHelper;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,7 +34,8 @@ public class PlantRenderer {
     private final Set<Class<?>> types;
     private final Set<Relation> relations;
     private final Filter<Class<?>> classesFilter;
-    private final Filter<Class<? extends Relation>> relationsFilter;
+    private final Filter<Class<? extends Relation>> relationsTypeFilter;
+    private Filter<Relation> relationsFilter;
     private final Set<Pattern> toTypesToShowAsMember;
     private static final Map<Class<? extends Relation>, MemberPrinter> memberPrinters = new HashMap<>();
 
@@ -36,19 +45,22 @@ public class PlantRenderer {
         memberPrinters.put(Extension.class, new NullPrinter());
     }
 
+
     public PlantRenderer(Set<Class<?>> types, Set<Relation> relations) {
-        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_ALLOW_ALL_CLASSES);
+        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_ALLOW_ALL_CLASSES, Filters.FILTER_CHAIN_RELATION_STANDARD);
     }
 
-    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationsFilter,
-                         Filter<Class<?>> classesFilter)
+    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationTypeFilter,
+                         Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter)
     {
         this.types = types;
         this.relations = relations;
-        this.relationsFilter = relationsFilter;
+        this.relationsTypeFilter = relationTypeFilter;
         this.classesFilter = classesFilter;
         toTypesToShowAsMember = new HashSet<>();
         toTypesToShowAsMember.add(Pattern.compile("^java.lang.*"));
+        toTypesToShowAsMember.add(Pattern.compile("^[^\\$]*"));
+        this.relationsFilter = relationsFilter;
     }
 
     /**
@@ -82,14 +94,35 @@ public class PlantRenderer {
      */
     protected void addRelations(StringBuilder sb) {
     	for (Relation r : relations) {
-            if (!relationsFilter.satisfy(r.getClass())) {
+            if (! relationsTypeFilter.satisfy(r.getClass())
+                    || ! relationsFilter.satisfy(r)) {
                 continue;
             }
-            if (r.getFromType().getName().contains("$")) {
-                continue;
-            }
-            sb.append(r.toString()).append("\n");
+            addRelation(sb, r);
         }
+    }
+
+    private void addRelation(StringBuilder sb, Relation r) {
+        if (r instanceof Use && isToTypeInAggregations(r)) {
+            return;
+        }
+        sb.append(r.toString()).append("\n");
+    }
+
+    private boolean isToTypeInAggregations(Relation r) {
+        try {
+            Class<?> toType = Class.forName(r.getToType(), true, Parser.CLASS_LOADER);
+            Class<?> origin = r.getFromType();
+            for (Field f: origin.getDeclaredFields()) {
+                // TODO: There migth be cases where toType is a generic Type param and this won't do well e.g.
+                // Collection<Type>
+                if (f.getType().equals(toType)) {
+                    return true;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+        }
+        return false;
     }
 
     /**
@@ -99,8 +132,9 @@ public class PlantRenderer {
      */
     protected void addClasses(StringBuilder sb) {
         for (Class<?> c : types) {
-        	if (!classesFilter.satisfy(c)){
-            	continue;
+        	if (! classesFilter.satisfy(c)){
+                System.out.println("Not adding class " + c);
+                continue;
             }
             addClass(sb, c);
         }
@@ -125,7 +159,7 @@ public class PlantRenderer {
                     && matches(relation.getToType(), toTypesToShowAsMember)) {
                 System.out.println(String.format("%s has a relation to %s to be shown as member", aClass.getName(), relation.getToType()));
                 memberPrinters.get(relation.getClass()).addMember(relation, fields, methods);
-                ri.remove();
+                relation.setPrintedAsMember(true);
             }
         }
         for (String field : fields) {
@@ -156,12 +190,11 @@ public class PlantRenderer {
         public void addMember(Relation r, Set<String> fields, Set<String> methods) {
             Member m = r.getOriginatingMember();
             if (m.isSynthetic()) {
+                System.out.println("skiping synthetic" + m);
                 return;
             }
-            if (null == m) {
-                System.out.println("Nooooouuuuu: " + r);
-            }
-            String msg = String.format("%s %s : %s", Modifiers.forModifier(m.getModifiers()).toString(), m.getName(),
+
+            String msg = String.format("%s %s : %s", Modifiers.forModifier(m.getModifiers()), m.getName(),
                     TypesHelper.getSimpleName(r.getToType()));
             fields.add(msg);
         }
@@ -177,7 +210,33 @@ public class PlantRenderer {
     static class MethodPrinter implements MemberPrinter {
         @Override
         public void addMember(Relation r, Set<String> fields, Set<String> methods) {
-            String msg = r.getMessage();
+            Member m = r.getOriginatingMember();
+            if (m.isSynthetic()) {
+                System.out.println("skiping synthetic" + m);
+                return;
+            }
+            String name = TypesHelper.getSimpleName(m.getName());
+            String modif = Modifiers.forModifier(m.getModifiers()).toString();
+            String returnType = (m instanceof Method)
+                    ? " : " + TypesHelper.getSimpleName(((Method) m).getReturnType().getName())
+                    : "";
+            StringBuilder params = new StringBuilder();
+            List<? extends TypeVariable<?>> paramClasses = Arrays.asList(
+                    ((GenericDeclaration) m).getTypeParameters());
+            Iterator<? extends TypeVariable<?>> it = paramClasses.iterator();
+            while (it.hasNext()) {
+                TypeVariable<?> c = it.next();
+                params.append(TypesHelper.getSimpleName(c.getName()));
+                if (it.hasNext()) {
+                    params.append(", ");
+                }
+            }
+
+            if (m instanceof Constructor && 0 == params.length()
+                    && Modifiers.PUBLIC.equals(Modifiers.forModifier(m.getModifiers()))) {
+                return;
+            }
+            String msg = String.format("%s %s(%s) %s", modif, name, params.toString(), returnType);
             methods.add(msg);
         }
     }

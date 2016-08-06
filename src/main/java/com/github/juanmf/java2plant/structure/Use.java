@@ -11,6 +11,7 @@ public class Use implements Relation {
     private final Class<?> from;
     private final String to;
     private final Member originatingMember;
+    private boolean printedAsMember;
 
     public Use(Class<?> from, String to, Member originatingMember) {
         this(from, to, originatingMember, null);
@@ -29,7 +30,7 @@ public class Use implements Relation {
 
     @Override
     public Member getOriginatingMember() {
-        return null;
+        return originatingMember;
     }
 
     public String getToType() {
@@ -55,6 +56,16 @@ public class Use implements Relation {
     @Override
     public String toString() {
         String fname = null == getMessage() ? "" : " : " + getMessage();
-        return String.format("%s %s %s %s", from, RELATION_TYPE_USE, to, fname);
+        return String.format("%s %s %s %s", from.getName(), RELATION_TYPE_USE, to, fname);
+    }
+
+    @Override
+    public void setPrintedAsMember(boolean printedAsMember) {
+        this.printedAsMember = printedAsMember;
+    }
+
+    @Override
+    public boolean getPrintedAsMember() {
+        return printedAsMember;
     }
 }

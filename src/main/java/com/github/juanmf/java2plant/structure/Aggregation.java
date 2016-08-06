@@ -12,6 +12,7 @@ public class Aggregation implements Relation {
     private final String to;
     private final String toCardinal;
     private final Member originatingMember;
+    private boolean printedAsMember;
 
     public Aggregation(Class<?> from, String to, Member originatingMember, String toCardinal) {
         this(from, to, originatingMember, toCardinal, null);
@@ -58,7 +59,17 @@ public class Aggregation implements Relation {
     public String toString() {
         String fname = null == getMessage() ? "" : " : " + getMessage();
         return String.format("%s \"%s\" %s \"%s\" %s %s",
-                from, getFromCardinal(), RELATION_TYPE_AGGREGATION, toCardinal, to, fname
+                from.getName(), getFromCardinal(), RELATION_TYPE_AGGREGATION, toCardinal, to, fname
             );
+    }
+
+    @Override
+    public void setPrintedAsMember(boolean printedAsMember) {
+        this.printedAsMember = printedAsMember;
+    }
+
+    @Override
+    public boolean getPrintedAsMember() {
+        return printedAsMember;
     }
 }

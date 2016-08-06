@@ -9,6 +9,7 @@ public class Extension implements Relation {
     public static final String RELATION_TYPE_EXTENSION = " -up|> ";
     private final Class<?> from;
     private final String to;
+    private boolean printedAsMember;
 
     public Extension(Class<?> from, String to) {
         this.from = from;
@@ -46,6 +47,16 @@ public class Extension implements Relation {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s", from, RELATION_TYPE_EXTENSION, to);
+        return String.format("%s %s %s", from.getName(), RELATION_TYPE_EXTENSION, to);
+    }
+
+    @Override
+    public void setPrintedAsMember(boolean printedAsMember) {
+        this.printedAsMember = printedAsMember;
+    }
+
+    @Override
+    public boolean getPrintedAsMember() {
+        return printedAsMember;
     }
 }

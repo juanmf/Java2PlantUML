@@ -1,25 +1,27 @@
 package com.github.juanmf.java2plant.render.filters;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author juanmf@gmail.com
  */
-public class ForbiddenFilter<T> implements Filter<T> {
-    
-	private List<T> forbiddenItems = new ArrayList<T>();
-	
+public class AllowedFilter<T> implements Filter<T> {
+
+	private Set<T> allowedItems = new HashSet<>();
+
     public void addForbiddenItem(T relation) {
-    	forbiddenItems.add(relation);
+    	allowedItems.add(relation);
     }
 
     public boolean removeForbiddenItem(T relation) {
-    	return forbiddenItems.remove(relation);
+    	return allowedItems.remove(relation);
     }
-    
+
 	@Override
 	public boolean satisfy(T item) {
-		return ! forbiddenItems.contains(item);
+		return allowedItems.contains(item);
 	}
 }

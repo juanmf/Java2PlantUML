@@ -53,30 +53,31 @@ public class Parser {
      * @return PlantUML src code of a Collaboration Diagram for the types found in package and all
      * related Types.
      */
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter,
-                               Filter<Class<?>> classesFilter) throws ClassNotFoundException
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
+                               Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter) throws ClassNotFoundException
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
-        return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
+        return parse(packageToPase, relationTypeFilter, classesFilter, classLoadersList, relationsFilter);
     }
 
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter,
-                               Filter<Class<?>> classesFilter, ClassLoader classLoader)
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
+                               Filter<Class<?>> classesFilter, ClassLoader classLoader, Filter<Relation> relationsFilter)
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(classLoader);
-        return parse(packageToPase, relationsFilter, classesFilter, classLoadersList);
+        return parse(packageToPase, relationTypeFilter, classesFilter, classLoadersList, relationsFilter);
     }
 
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationsFilter,
-                               Filter<Class<?>> classesFilter, List<ClassLoader> classLoadersList)
+    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
+                               Filter<Class<?>> classesFilter, List<ClassLoader> classLoadersList,
+                               Filter<Relation> relationsFilter)
     {
         Set<Relation> relations = new HashSet<Relation>();
         Set<Class<?>> classes = getTypes(packageToPase, classLoadersList);
         for (Class<?> aClass : classes) {
             addFromTypeRelations(relations, aClass);
         }
-        return new PlantRenderer(classes, relations, relationsFilter, classesFilter).render();
+        return new PlantRenderer(classes, relations, relationTypeFilter, classesFilter, relationsFilter).render();
     }
 
     private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {

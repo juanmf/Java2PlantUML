@@ -13,4 +13,8 @@ public interface Relation {
     String getMessage();
     String getFromCardinal();
     String getToCardinal();
+    String toString();
+    void setPrintedAsMember(boolean printedAsMember);
+    boolean getPrintedAsMember();
+
 }
