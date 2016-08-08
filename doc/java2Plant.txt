@@ -1,0 +1,180 @@
+@startuml
+' Created by juanmf@gmail.com
+
+' Using left to right direction to try a better layout feel free to edit
+left to right direction
+' Participants 
+
+class com.github.juanmf.java2plant.render.filters.AllowedRexegFilter {
+--
++  removeForbiddenItem()  : boolean
++  satisfy()  : boolean
++  addForbiddenItem()  : void
+
+} 
+ class com.github.juanmf.java2plant.Parser {
++  CLASS_LOADER : ClassLoader
+--
+#  addExtensions()  : void
+#  addAggregations()  : void
+#  addUse()  : void
+#  addUses()  : void
++  parse()  : String
+#  addMethodUse()  : void
+#  addFromTypeRelations()  : void
+#  addConstructorUse()  : void
+#  isMulti()  : boolean
+#  addConstructorUses()  : void
+#  getTypeParams()  : Set
+#  addAggregation()  : void
+#  addImplementations()  : void
+#  addMethodUses()  : void
+
+} 
+ class com.github.juanmf.java2plant.Main {
+--
++  main()  : void
+
+} 
+ class com.github.juanmf.java2plant.structure.Aggregation {
++  RELATION_TYPE_AGGREGATION : String
+--
++  setPrintedAsMember()  : void
+
+} 
+ class com.github.juanmf.java2plant.structure.Use {
++  RELATION_TYPE_USE : String
+--
++  setPrintedAsMember()  : void
+
+} 
+ class com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter {
+--
++  removeForbiddenItem()  : boolean
++  satisfy()  : boolean
++  addForbiddenItem()  : void
+
+} 
+ class com.github.juanmf.java2plant.render.filters.AllowedFilter {
+--
++  removeForbiddenItem()  : boolean
++  satisfy()  : boolean
++  addForbiddenItem()  : void
+
+} 
+ class com.github.juanmf.java2plant.util.TypesHelper {
+--
++  getSimpleName()  : String
+
+} 
+ interface com.github.juanmf.java2plant.structure.Relation {
+--
++  setPrintedAsMember()  : void
+
+} 
+ class com.github.juanmf.java2plant.render.PlantRenderer {
+--
+#  addRelations()  : void
+#  addClasses()  : void
+#  addClass()  : void
+
+} 
+ class com.github.juanmf.java2plant.render.filters.Filters {
++  FILTER_FORBID_BASE_CLASSES : ForbiddenRexegFilter
++  FILTER_CHAIN_RELATION_STANDARD : ChainFilter
++  FILTER_FORBID_PRIMITIVES : ForbiddenRexegFilter
++  FILTER_FORBID_USES : ForbiddenFilter
++  FILTER_FORBID_ANONIMOUS : ForbiddenRexegFilter
++  FILTER_FORBID_AGGREGATION : ForbiddenFilter
++  FILTER_FORBID_EXTENSION : ForbiddenFilter
++  FILTER_RELATION_ALLOW_ALL : RelationFieldsFilter
++  FILTER_RELATION_FORBID_TO_PRIMITIVE : RelationFieldsFilter
++  FILTER_ALLOW_ALL_RELATIONS : ForbiddenFilter
++  FILTER_ALLOW_ALL_CLASSES : ForbiddenFilter
++  FILTER_RELATION_FORBID_FROM_ANONIMOUS : RelationFieldsFilter
++  FILTER_RELATION_FORBID_TO_BASE : RelationFieldsFilter
+--
+
+} 
+ class com.github.juanmf.java2plant.render.filters.ForbiddenFilter {
+--
++  removeForbiddenItem()  : boolean
++  satisfy()  : boolean
++  addForbiddenItem()  : void
+
+} 
+ class com.github.juanmf.java2plant.render.filters.ChainFilter {
+~  filters : Filter<T>
+--
++  satisfy()  : boolean
++  removeFilter()  : boolean
++  addFilter()  : boolean
+
+} 
+ class com.github.juanmf.java2plant.structure.Extension {
++  RELATION_TYPE_EXTENSION : String
+--
++  setPrintedAsMember()  : void
+
+} 
+ class com.github.juanmf.java2plant.render.filters.RelationFieldsFilter {
+--
++  setFilter()  : void
++  satisfy()  : boolean
+
+} 
+ interface com.github.juanmf.java2plant.render.filters.Filter {
+--
++  satisfy()  : boolean
+
+} 
+ 
+' Relations 
+
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_AGGREGATION
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_ALLOW_ALL_CLASSES
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.PlantRenderer$MethodPrinter  .down.>  com.github.juanmf.java2plant.structure.Relation  : addMember()
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_ALLOW_ALL
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_EXTENSION
+com.github.juanmf.java2plant.render.filters.AllowedFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter  .down.>  com.github.juanmf.java2plant.structure.Relation  : addMember()
+com.github.juanmf.java2plant.render.filters.ForbiddenFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_ALLOW_ALL_RELATIONS
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_USES
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  .down.>  java.util.regex.Pattern  : removeForbiddenItem()
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_BASE_CLASSES
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_FROM_ANONIMOUS
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.structure.Extension  -up|>  com.github.juanmf.java2plant.structure.Relation
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_BASE
+com.github.juanmf.java2plant.render.filters.ChainFilter  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : addFilter()
+com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter  .down.>  com.github.juanmf.java2plant.structure.Relation  : addMember()
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.PlantRenderer$NullPrinter  .down.>  com.github.juanmf.java2plant.structure.Relation  : addMember()
+com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_STANDARD
+com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  .down.>  java.util.regex.Pattern  : satisfy()
+com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  .down.>  java.util.regex.Pattern  : addForbiddenItem()
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  .down.>  com.github.juanmf.java2plant.structure.Relation  : satisfy()
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_PRIMITIVES
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_PRIMITIVE
+com.github.juanmf.java2plant.render.PlantRenderer$MethodPrinter  -up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
+com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter  -up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.filters.ChainFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.filters.ChainFilter  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : removeFilter()
+com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  .down.>  java.util.regex.Pattern  : removeForbiddenItem()
+com.github.juanmf.java2plant.render.PlantRenderer$NullPrinter  -up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
+com.github.juanmf.java2plant.structure.Aggregation  -up|>  com.github.juanmf.java2plant.structure.Relation
+com.github.juanmf.java2plant.Parser  .down.>  com.github.juanmf.java2plant.render.filters.Filter  : parse()
+com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  .down.>  java.util.regex.Pattern  : addForbiddenItem()
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_ANONIMOUS
+com.github.juanmf.java2plant.structure.Use  -up|>  com.github.juanmf.java2plant.structure.Relation
+@enduml

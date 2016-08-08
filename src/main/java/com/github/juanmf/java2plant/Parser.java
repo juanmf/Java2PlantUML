@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -83,10 +85,11 @@ public class Parser {
     private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {
         classLoadersList.add(ClasspathHelper.contextClassLoader());
         classLoadersList.add(ClasspathHelper.staticClassLoader());
-        CLASS_LOADER = classLoadersList.get(0);
+        Collection<URL> urls = ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]));
+        CLASS_LOADER = new URLClassLoader(urls.toArray(new URL[0]));
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner())
-                .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
+                .setUrls(urls)
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToPase))));
 
         Set<String> types = reflections.getAllTypes();
