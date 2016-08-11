@@ -59,6 +59,7 @@ public class Parser {
                                Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter) throws ClassNotFoundException
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
+
         return parse(packageToPase, relationTypeFilter, classesFilter, classLoadersList, relationsFilter);
     }
 
@@ -166,32 +167,31 @@ public class Parser {
     }
 
     protected static void addConstructorUses(Set<Relation> relations, Class<?> fromType, Constructor<?> c) {
-        Class<?>[] parameterTypes = c.getParameterTypes();
         Type[] genericParameterTypes = c.getGenericParameterTypes();
-        for(int i = 0; i < parameterTypes.length; i++) {
-            addConstructorUse(relations, fromType, parameterTypes[i], genericParameterTypes[i], c);
+        for(int i = 0; i < genericParameterTypes.length; i++) {
+            addConstructorUse(relations, fromType, genericParameterTypes[i], c);
         }
     }
 
     protected static void addMethodUses(Set<Relation> relations, Class<?> fromType, Method m) {
-        Class<?>[] parameterTypes = m.getParameterTypes();
         Type[] genericParameterTypes = m.getGenericParameterTypes();
-        for(int i = 0; i < parameterTypes.length; i++) {
-            addMethodUse(relations, fromType, parameterTypes[i], genericParameterTypes[i], m);
+        for(int i = 0; i < genericParameterTypes.length; i++) {
+            addMethodUse(relations, fromType, genericParameterTypes[i], m);
         }
     }
 
-    protected static void addConstructorUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, Constructor<?> c) {
+    protected static void addConstructorUse(Set<Relation> relations, Class<?> fromType, Type toType, Constructor<?> c) {
         String name = TypesHelper.getSimpleName(c.getName()) + "()";
-        addUse(relations, fromType, toType, fromParameterType, c, name);
+        addUse(relations, fromType, toType, c, name);
     }
 
-    protected static void addUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, Member m, String msg) {
-        String toName = toType.getName();
+    protected static void addUse(Set<Relation> relations, Class<?> fromType, Type toType, Member m, String msg) {
+//        String toName = toType.getName();
+        String toName = toType.toString();
         if (isMulti(toType)) {
-            if (! toType.isArray()) {
-                if (fromParameterType instanceof ParameterizedType) {
-                    ParameterizedType pt = (ParameterizedType) fromParameterType;
+            if (! ((Class) toType).isArray()) {
+                if (toType instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) toType;
                     Set<String> typeVars = getTypeParams(pt);
                     for (String t : typeVars) {
                         msg += toName;
@@ -201,22 +201,22 @@ public class Parser {
                     return;
                 }
             }
-            toName = toType.getCanonicalName().replace("[]", "");
+            toName = ((Class) toType).getCanonicalName().replace("[]", "");
             msg += ": []";
         }
         Relation use = new Use(fromType, toName, m, msg);
         relations.add(use);
     }
 
-    protected static void addMethodUse(Set<Relation> relations, Class<?> fromType, Class<?> toType, Type fromParameterType, Method m) {
+    protected static void addMethodUse(Set<Relation> relations, Class<?> fromType, Type fromParameterType, Method m) {
         String name = TypesHelper.getSimpleName(m.getName()) + "()";
-        addUse(relations, fromType, toType, fromParameterType, m, name);
+        addUse(relations, fromType, fromParameterType, m, name);
     }
 
-    protected static boolean isMulti(Class<?> delegateType) {
-        return delegateType.isArray()
-                || Collection.class.isAssignableFrom(delegateType)
-                || Map.class.isAssignableFrom(delegateType);
+    protected static boolean isMulti(Type delegateType) {
+        return (delegateType instanceof Class) && (((Class) delegateType).isArray()
+                || Collection.class.isAssignableFrom((Class) delegateType)
+                || Map.class.isAssignableFrom((Class) delegateType));
     }
 
     protected static void addAggregation(Set<Relation> relations, Class<?> fromType, Field f) {
