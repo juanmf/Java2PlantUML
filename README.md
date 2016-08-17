@@ -8,20 +8,22 @@ Class Diagram src for PlantUML in cli output as
 @startuml
 ' Created by juanmf@gmail.com
 
+' Using left to right direction to try a better layout feel free to edit
+left to right direction
 ' Participants 
 
-class com.something.AClass
+class com.github.juanmf.java2plant.render.filters.PredicateFilter {
+#  predicate : Predicate
+--
++  satisfy()  : boolean
 
-' Relations 
+}
+class...
 
-com.something.AClass  .down.>  info.magnolia.module.googlesitemap.service.SiteMapXMLUtil  : StaticPublisher()
-com.something.AClass  .down.>  javax.jcr.Node  : setRootNode()
-com.something.AClass  .down.>  boolean  : setPreview()
-com.something.AClass  .down.>  java.lang.String  : setWorkspace()
-com.something.AClass  .down.>  org.apache.http.client.HttpClient  : StaticPublisher()
-com.something.AClass  .down.>  info.magnolia.cms.i18n.I18nContentSupport  : StaticPublisher()
-com.something.AClass  .down.>  info.magnolia.dam.api.AssetProviderRegistry  : StaticPublisher()
-com.something.AClass  .down.>  class java.lang.String  : setPublishingLanguages()java.util.Collection
+' Relations
+
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_BASE
+com...
 @enduml
 
 [INFO] ------------------------------------------------------------------------
@@ -32,7 +34,6 @@ com.something.AClass  .down.>  class java.lang.String  : setPublishingLanguages(
 [INFO] Final Memory: 17M/212M
 [INFO] ------------------------------------------------------------------------
 
-mvn clean install
 ```
 
 Installation
@@ -48,7 +49,7 @@ mvn clean install
 Usage
 =====
 
-Then add the plugin markup to your pom.xml.
+Then add the plugin markup to your desired project's pom.xml.
 For the sake of example, this plugin markup is included in its own pom.xml so 
 you can run the plugin in this project too (after installing, of course).
 
@@ -71,7 +72,7 @@ you can run the plugin in this project too (after installing, of course).
 </project>
 ```
 
-Then step at your project's pom directory an run
+Then step at your project's pom directory and run
 
 ```
 mvn   -Dparse.thePackage="com.something.AClass" clean compile java2PlantUML:parse 
@@ -79,10 +80,19 @@ mvn   -Dparse.thePackage="com.something.AClass" clean compile java2PlantUML:pars
 mvn   -Dparse.thePackage="com.something.apackage" clean compile java2PlantUML:parse 
 
 ```
-parse.thePackage is the root from where class scanning will get the main 
-classes of your Diagram.
+`parse.thePackage` is the root from where class scanning will get the main 
+classes of your Diagram, it can be a package or a FQCN.
 
 You might want to remove the plugin markup from your pom after you got the desired Diagrams.
+
+Results
+=======
+
+The end result, after processing output with plantUML is a UML diagram rendered 
+by plant as per the instructions in the generated script, a run over this project
+renders:
+
+![java2Plant diagram should appear here..](/doc/java2Plant.png?raw=true "Java2Plant Collaboration")
 
 
 TODO
