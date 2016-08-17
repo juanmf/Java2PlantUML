@@ -10,14 +10,14 @@ import java.util.Set;
  */
 public class AllowedFilter<T> implements Filter<T> {
 
-	private Set<T> allowedItems = new HashSet<>();
+	protected Set<T> allowedItems = new HashSet<>();
 
-    public void addForbiddenItem(T relation) {
-    	allowedItems.add(relation);
+    public void addItem(T item) {
+    	allowedItems.add(item);
     }
 
-    public boolean removeForbiddenItem(T relation) {
-    	return allowedItems.remove(relation);
+    public boolean removeItem(T item) {
+    	return allowedItems.remove(item);
     }
 
 	@Override

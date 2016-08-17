@@ -45,8 +45,9 @@ at this project's pom Directory and run
 mvn clean install
 ```
 
-Usesage
-=======
+Usage
+=====
+
 Then add the plugin markup to your pom.xml.
 For the sake of example, this plugin markup is included in its own pom.xml so 
 you can run the plugin in this project too (after installing, of course).
@@ -73,9 +74,9 @@ you can run the plugin in this project too (after installing, of course).
 Then step at your project's pom directory an run
 
 ```
-mvn   -Dparse.thePackage="com.something.AClass"  java2PlantUML:parse 
+mvn   -Dparse.thePackage="com.something.AClass" clean compile java2PlantUML:parse 
 // or
-mvn   -Dparse.thePackage="com.something.apackage"  java2PlantUML:parse 
+mvn   -Dparse.thePackage="com.something.apackage" clean compile java2PlantUML:parse 
 
 ```
 parse.thePackage is the root from where class scanning will get the main 
@@ -87,8 +88,6 @@ You might want to remove the plugin markup from your pom after you got the desir
 TODO
 ====
  * Add Filters to CLI params
- * hide some relations, choose toTypes to hide in relation fromType --> toType.
- * show some composition relations as attrs inside the class, e.g. java.lang.* 
  instead of arrows.
  * represent Type parameters in class definitions i.e. public class SelectFieldFactory<D extends SelectFieldDefinition>
- 
+ * Render several diagrams, making focus on classes inside given packages.

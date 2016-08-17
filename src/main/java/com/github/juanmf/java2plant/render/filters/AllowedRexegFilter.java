@@ -5,20 +5,23 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
+ * @param <C> the item type that will be filtered
+ *
  * @author juanmf@gmail.com
  */
-public class AllowedRexegFilter<T extends Pattern, C extends Class<?>> implements Filter<T> {
+public class AllowedRexegFilter<C extends Class<?>> implements Filter<C> {
     
-	private Set<T> allowedPatterns = new HashSet<T>();
+	protected Set<Pattern> allowedPatterns = new HashSet<>();
 	
-    public void addForbiddenItem(T pattern) {
+    public void addForbiddenItem(Pattern pattern) {
     	allowedPatterns.add(pattern);
     }
 
-    public boolean removeForbiddenItem(T pattern) {
+    public boolean removeForbiddenItem(Pattern pattern) {
     	return allowedPatterns.remove(pattern);
     }
 
+	@Override
 	public boolean satisfy(C item) {
 		for (Pattern p : allowedPatterns) {
 			if (p.matcher(item.getName()).matches()) {
@@ -26,10 +29,5 @@ public class AllowedRexegFilter<T extends Pattern, C extends Class<?>> implement
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public boolean satisfy(T item) {
-		throw new UnsupportedOperationException("I accept patterns to forbid class, Class<?> expected for satisfy");
 	}
 }

@@ -3,6 +3,7 @@ package com.github.juanmf.java2plant.render.filters;
 
 import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.structure.Relation;
+import com.github.juanmf.java2plant.util.TypesHelper;
 
 /**
  * @author juanmf@gmail.com
@@ -33,10 +34,10 @@ public class RelationFieldsFilter implements Filter<Relation> {
 
     private boolean apply(String toType) {
         // TODO: EVALUATE REFACTOR TO cLASS FOR TOTYPE
-        try {
-            return apply(Class.forName(toType, true, Parser.CLASS_LOADER));
-        } catch (ClassNotFoundException e) {
-            System.out.println("Could not find class " + toType);
+        Class<?> aClass = TypesHelper.loadClass(toType, Parser.CLASS_LOADER);
+        aClass = null == aClass ? TypesHelper.loadClass(toType, null) : aClass;
+        if (null != aClass) {
+            return apply(aClass);
         }
         return false;
     }

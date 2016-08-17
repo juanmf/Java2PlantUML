@@ -7,23 +7,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
+ * @param <C> the item type that will be filtered
+ *
  * @author juanmf@gmail.com
  */
-public class ForbiddenRexegFilter<T extends Class<?>> implements Filter<T> {
-    
-	private Set<Pattern> forbiddenPatterns = new HashSet<>();
-	
-    public void addForbiddenItem(Pattern pattern) {
-    	forbiddenPatterns.add(pattern);
-    }
-
-    public boolean removeForbiddenItem(Pattern pattern) {
-    	return forbiddenPatterns.remove(pattern);
-    }
+public class ForbiddenRexegFilter<C extends Class<?>> extends AllowedRexegFilter<C> {
 
     @Override
-	public boolean satisfy(T item) {
-		for (Pattern p : forbiddenPatterns) {
+	public boolean satisfy(C item) {
+		for (Pattern p : allowedPatterns) {
 			if (p.matcher(item.getName()).matches()) {
 				return false;
 			}

@@ -1,10 +1,14 @@
 package com.github.juanmf.java2plant.render.filters;
 
+import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.structure.Aggregation;
 import com.github.juanmf.java2plant.structure.Extension;
 import com.github.juanmf.java2plant.structure.Relation;
 import com.github.juanmf.java2plant.structure.Use;
+import com.github.juanmf.java2plant.util.TypesHelper;
+import com.google.common.base.Predicate;
 
+import javax.annotation.Nullable;
 import java.util.regex.Pattern;
 
 /**
@@ -16,6 +20,8 @@ public class Filters {
     public static final ForbiddenFilter<Class<? extends Relation>> FILTER_FORBID_EXTENSION;
     public static final ForbiddenFilter<Class<? extends Relation>> FILTER_ALLOW_ALL_RELATIONS;
     public static final ForbiddenFilter<Class<?>> FILTER_ALLOW_ALL_CLASSES;
+
+    public static final PredicateFilter<Relation> FILTER_FORBID_ENUM_AGGREGATION_LOOP;
 
     public static final ForbiddenRexegFilter<Class<?>> FILTER_FORBID_ANONIMOUS;
     public static final ForbiddenRexegFilter<Class<?>> FILTER_FORBID_PRIMITIVES;
@@ -43,9 +49,19 @@ public class Filters {
         FILTER_RELATION_FORBID_FROM_ANONIMOUS = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
         FILTER_RELATION_ALLOW_ALL = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
 
-        FILTER_FORBID_USES.addForbiddenItem(Use.class);
-        FILTER_FORBID_AGGREGATION.addForbiddenItem(Aggregation.class);
-        FILTER_FORBID_EXTENSION.addForbiddenItem(Extension.class);
+        FILTER_FORBID_ENUM_AGGREGATION_LOOP = new PredicateFilter<>(new Predicate<Relation>() {
+            @Override
+            public boolean apply(@Nullable Relation relation) {
+                Class<?> toType = TypesHelper.loadClass(relation.getToType(), Parser.CLASS_LOADER);
+                toType = null != toType ? toType : TypesHelper.loadClass(relation.getToType(), null);
+                return ! Aggregation.class.equals(relation.getClass())
+                        || ! (relation.getFromType().isEnum() && relation.getFromType().equals(toType));
+            }
+        });
+
+        FILTER_FORBID_USES.addItem(Use.class);
+        FILTER_FORBID_AGGREGATION.addItem(Aggregation.class);
+        FILTER_FORBID_EXTENSION.addItem(Extension.class);
         FILTER_FORBID_ANONIMOUS.addForbiddenItem(Pattern.compile(".*\\$\\d.*"));
         FILTER_FORBID_PRIMITIVES.addForbiddenItem(Pattern.compile("[^\\.]"));
         FILTER_FORBID_BASE_CLASSES.addForbiddenItem(Pattern.compile("^java\\.lang\\..*"));
@@ -58,5 +74,6 @@ public class Filters {
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_TO_PRIMITIVE);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_TO_BASE);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_FROM_ANONIMOUS);
+        FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_FORBID_ENUM_AGGREGATION_LOOP);
     }
 }

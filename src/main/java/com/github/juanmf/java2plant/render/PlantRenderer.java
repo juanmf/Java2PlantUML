@@ -9,6 +9,7 @@ import com.github.juanmf.java2plant.structure.Extension;
 import com.github.juanmf.java2plant.structure.Relation;
 import com.github.juanmf.java2plant.structure.Use;
 import com.github.juanmf.java2plant.util.TypesHelper;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -17,7 +18,9 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,12 +40,13 @@ public class PlantRenderer {
     private final Filter<Class<? extends Relation>> relationsTypeFilter;
     private Filter<Relation> relationsFilter;
     private final Set<Pattern> toTypesToShowAsMember;
-    private static final Map<Class<? extends Relation>, MemberPrinter> memberPrinters = new HashMap<>();
+    private static final Map<Class<? extends Member>, MemberPrinter> memberPrinters = new HashMap<>();
 
     static {
-        memberPrinters.put(Use.class, new MethodPrinter());
-        memberPrinters.put(Aggregation.class, new FieldPrinter());
-        memberPrinters.put(Extension.class, new NullPrinter());
+        MethodPrinter mp = new MethodPrinter();
+        memberPrinters.put(Field.class, new FieldPrinter());
+        memberPrinters.put(Constructor.class, mp);
+        memberPrinters.put(Method.class, mp);
     }
 
 
@@ -74,16 +78,18 @@ public class PlantRenderer {
      */
     public String render() {
         StringBuilder sb = new StringBuilder();
-        sb.append("@startuml\n");
-        sb.append("' Created by juanmf@gmail.com\n\n");
-        sb.append("' Using left to right direction to try a better layout feel free to edit\n");
-        sb.append("left to right direction\n");
+        sb.append("@startuml\n")
+                .append("' Created by juanmf@gmail.com\n\n")
+                .append("' Using left to right direction to try a better layout feel free to edit\n")
+                .append("left to right direction\n");
+
         sb.append("' Participants \n\n");
         addClasses(sb);
+
         sb.append("\n' Relations \n\n");
         addRelations(sb);
-        sb.append("@enduml\n");
 
+        sb.append("@enduml\n");
         return sb.toString();
     }
 
@@ -93,7 +99,17 @@ public class PlantRenderer {
      * @param sb
      */
     protected void addRelations(StringBuilder sb) {
-    	for (Relation r : relations) {
+        ArrayList<Relation> relations = new ArrayList(this.relations);
+        Collections.sort(relations, new Comparator<Relation>() {
+            @Override
+            public int compare(Relation o1, Relation o2) {
+                int result = o1.getClass().equals(o2.getClass())
+                        ? o1.getFromType().getName().compareTo(o1.getFromType().getName())
+                        : o1.getClass().getName().compareTo(o2.getClass().getName());
+                return result;
+            }
+        });
+        for (Relation r : relations) {
             if (! relationsTypeFilter.satisfy(r.getClass())
                     || ! relationsFilter.satisfy(r)) {
                 continue;
@@ -110,17 +126,14 @@ public class PlantRenderer {
     }
 
     private boolean isToTypeInAggregations(Relation r) {
-        try {
-            Class<?> toType = Class.forName(r.getToType(), true, Parser.CLASS_LOADER);
-            Class<?> origin = r.getFromType();
-            for (Field f: origin.getDeclaredFields()) {
-                // TODO: There migth be cases where toType is a generic Type param and this won't do well e.g.
-                // Collection<Type>
-                if (f.getType().equals(toType)) {
-                    return true;
-                }
+        Class<?> toType = TypesHelper.loadClass(r.getToType(), Parser.CLASS_LOADER);
+        toType = null == toType ? TypesHelper.loadClass(r.getToType(), null) : toType;
+        Class<?> origin = r.getFromType();
+        for (Field f: origin.getDeclaredFields()) {
+            // TODO: There migth be cases where toType is a generic Type param and this won't do well e.g. Collection<Type>
+            if (f.getType().equals(toType)) {
+                return true;
             }
-        } catch (ClassNotFoundException e) {
         }
         return false;
     }
@@ -141,76 +154,73 @@ public class PlantRenderer {
     }
 
     protected void addClass(StringBuilder sb, Class<?> aClass) {
-        if (aClass.getName().contains("$")) {
-            return;
-        }
-        sb.append(aClass.toString()).append(" {\n");
+        String classDeclaration = aClass.isEnum() ? "enum " + aClass.getName() : aClass.toString();
+        sb.append(classDeclaration).append(" {\n");
         renderClassMembers(sb, aClass);
-        sb.append("\n} \n ");
+        sb.append("\n}\n");
     }
 
     private void renderClassMembers(StringBuilder sb, Class<?> aClass) {
-        Iterator<Relation> ri = relations.iterator();
-        Set<String> fields = new HashSet<>();
-        Set<String> methods = new HashSet<>();
-        while (ri.hasNext()) {
-            Relation relation = ri.next();
-            if (relation.getFromType().equals(aClass)
-                    && matches(relation.getToType(), toTypesToShowAsMember)) {
-                System.out.println(String.format("%s has a relation to %s to be shown as member", aClass.getName(), relation.getToType()));
-                memberPrinters.get(relation.getClass()).addMember(relation, fields, methods);
-                relation.setPrintedAsMember(true);
-            }
-        }
+        List<String> fields = new ArrayList<>();
+        List<String> methods = new ArrayList<>();
+        List<String> constructors = new ArrayList<>();
+
+        addMembers(aClass.getDeclaredFields(), fields);
+        addMembers(aClass.getDeclaredConstructors(), constructors);
+        addMembers(aClass.getDeclaredMethods(), methods);
+
+        Collections.sort(fields);
+        Collections.sort(methods);
+        Collections.sort(constructors);
+
         for (String field : fields) {
             sb.append(field + "\n");
         }
         sb.append("--\n");
+        for (String constructor : constructors) {
+            sb.append(constructor + "\n");
+        }
         for (String method : methods) {
             sb.append(method + "\n");
         }
     }
 
-    private boolean matches(String toType, Set<Pattern> toTypesToShowAsAttrs) {
-        for (Pattern pattern : toTypesToShowAsAttrs) {
-            Matcher m = pattern.matcher(toType);
-            if (m.matches()) {
-                return true;
-            }
+    private void addMembers(Member[] declaredMembers, List<String> plantMembers) {
+        for (Member m : declaredMembers) {
+            memberPrinters.get(m.getClass()).addMember(m, plantMembers);
         }
-        return false;
+
     }
 
     interface MemberPrinter {
-        void addMember(Relation r, Set<String> fields, Set<String> methods);
+        void addMember(Member m, List<String> plantMembers);
     }
 
     static class FieldPrinter implements MemberPrinter {
         @Override
-        public void addMember(Relation r, Set<String> fields, Set<String> methods) {
-            Member m = r.getOriginatingMember();
-            if (m.isSynthetic()) {
-                System.out.println("skiping synthetic" + m);
+        public void addMember(Member m, List<String> plantMembers) {
+            Field f = (Field) m;
+            if (f.isSynthetic()) {
+                System.out.println("skiping synthetic" + f);
                 return;
             }
 
-            String msg = String.format("%s %s : %s", Modifiers.forModifier(m.getModifiers()), m.getName(),
-                    TypesHelper.getSimpleName(r.getToType()));
-            fields.add(msg);
+            String msg = String.format("%s %s : %s", Modifiers.forModifier(f.getModifiers()), f.getName(),
+                    TypesHelper.getSimpleName(f.getType().getName()));
+            plantMembers.add(msg);
         }
     }
 
     static class NullPrinter implements MemberPrinter {
         @Override
-        public void addMember(Relation r, Set<String> fields, Set<String> methods) {
-            System.out.println(String.format("skipping %s to %s relation", r.getFromType(), r.getToType()));
+        public void addMember(Member m, List<String> plantMembers) {
+            System.out.println(String.format("skipping member %s.", m));
         }
     }
 
     static class MethodPrinter implements MemberPrinter {
         @Override
-        public void addMember(Relation r, Set<String> fields, Set<String> methods) {
-            Member m = r.getOriginatingMember();
+        public void addMember(Member m, List<String> plantMembers) {
             if (m.isSynthetic()) {
                 System.out.println("skiping synthetic" + m);
                 return;
@@ -237,7 +247,7 @@ public class PlantRenderer {
                 return;
             }
             String msg = String.format("%s %s(%s) %s", modif, name, params.toString(), returnType);
-            methods.add(msg);
+            plantMembers.add(msg);
         }
     }
 

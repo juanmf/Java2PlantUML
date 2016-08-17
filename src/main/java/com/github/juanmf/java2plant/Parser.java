@@ -17,10 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.juanmf.java2plant.util.CanonicalName;
 import com.github.juanmf.java2plant.util.TypesHelper;
+import com.google.common.collect.Sets;
+import com.sun.org.apache.xpath.internal.SourceTree;
+import org.apache.commons.lang3.StringUtils;
+import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
+import org.reflections.Store;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeElementsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
@@ -45,7 +52,7 @@ import com.github.juanmf.java2plant.structure.Use;
  */
 
 public class Parser {
-    public static ClassLoader CLASS_LOADER = null;
+    public static URLClassLoader CLASS_LOADER = null;
 
     /**
      * Parse the given package recursively, then iterates over found types to fetch their relations.
@@ -89,22 +96,28 @@ public class Parser {
         Collection<URL> urls = ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]));
         CLASS_LOADER = new URLClassLoader(urls.toArray(new URL[0]));
         Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner())
+                .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner(), new TypeElementsScanner())
                 .setUrls(urls)
-                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToPase))));
+                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToPase)).exclude("java.*")));
 
-        Set<String> types = reflections.getAllTypes();
         Set<Class<?>> classes = new HashSet<>();
+        Set<String> types;
+        types = reflections.getStore().get("TypeElementsScanner").keySet();
         for (String type: types) {
-            try {
-                classes.add(Class.forName(type, true, CLASS_LOADER));
-            } catch (ClassNotFoundException e) {
-                System.out.println("ClassNotFoundException: " + e.getMessage());
-                continue;
+            Class<?> aClass = TypesHelper.loadClass(type, CLASS_LOADER);
+            if (null == aClass) {
+                aClass = TypesHelper.loadClass(type, null);
+            }
+            boolean wantedElement = StringUtils.startsWith(type, packageToPase);
+            if (null != aClass && wantedElement) {
+                System.out.println("looking up for type: " + type);
+                classes.add(aClass);
             }
         }
         return classes;
     }
+
+
 
     /**
      * For the given type, adds to relations:
@@ -201,7 +214,7 @@ public class Parser {
                     return;
                 }
             }
-            toName = ((Class) toType).getCanonicalName().replace("[]", "");
+            toName = CanonicalName.getClassName(((Class) toType).getName());
             msg += ": []";
         }
         Relation use = new Use(fromType, toName, m, msg);
@@ -235,7 +248,7 @@ public class Parser {
                 }
                 return;
             }
-            toName = delegateType.getCanonicalName().replace("[]", "");
+            toName = CanonicalName.getClassName(delegateType.getName());
         }
         Relation aggregation = new Aggregation(fromType, toName, f, toCardinal, varName);
         relations.add(aggregation);

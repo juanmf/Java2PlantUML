@@ -6,20 +6,10 @@ import java.util.List;
 /**
  * @author juanmf@gmail.com
  */
-public class ForbiddenFilter<T> implements Filter<T> {
-    
-	private List<T> forbiddenItems = new ArrayList<T>();
-	
-    public void addForbiddenItem(T relation) {
-    	forbiddenItems.add(relation);
-    }
+public class ForbiddenFilter<T> extends AllowedFilter<T> {
 
-    public boolean removeForbiddenItem(T relation) {
-    	return forbiddenItems.remove(relation);
-    }
-    
 	@Override
 	public boolean satisfy(T item) {
-		return ! forbiddenItems.contains(item);
+		return ! allowedItems.contains(item);
 	}
 }

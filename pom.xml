@@ -21,6 +21,13 @@
             <version>0.9.10</version>
         </dependency>
 
+        <!-- Apache commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.0</version>
+        </dependency>
+
         <!-- dependencies to annotations and maven plugin stuff-->
         <dependency>
             <groupId>org.apache.maven</groupId>
