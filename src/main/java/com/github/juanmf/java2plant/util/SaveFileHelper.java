@@ -10,39 +10,35 @@ import java.util.Locale;
 
 public class SaveFileHelper {
 
-	private static final String J2PUML = "j2PUML";
+   private static final String J2PUML = "j2puml";
 
-	public static void save(StringBuilder pumlContent, String path) throws IOException {
-		final File file;
+   public static void save(StringBuilder pumlContent, String path) throws IOException {
+      final File file = new File(getPathName(path));
+      BufferedWriter bw;
+      bw = new BufferedWriter(new FileWriter(file));
+      bw.write(pumlContent.toString());
 
-		if (path == null) {
-			file = new File(getPathName(path));
-		} else {
-			file = new File(getPathName(null));
-		}
+      bw.flush();
+      bw.close();
+   }
 
-		BufferedWriter bw;
-		bw = new BufferedWriter(new FileWriter(file));
-		bw.write(pumlContent.toString());
+   private static String getPathName(String rout) {
+      final StringBuilder path;
+      if (rout != null) {
+         // TODO: It must be checked what we got in the rout (path) to validate
+         // it...
+         path = new StringBuilder(rout.concat(J2PUML));
+      } else {
+         path = new StringBuilder(J2PUML);
+      }
 
-		bw.flush();
-		bw.close();
-	}
+      SimpleDateFormat instant = new SimpleDateFormat("ddMMyyyy_HM_mm", Locale.getDefault());
+      Date now = new Date();
+      StringBuilder fullName = new StringBuilder(instant.format(now));
 
-	private static String getPathName(String rout) {
-		final StringBuilder path;
-		if (rout == null) {
-			path = new StringBuilder(J2PUML);
-		} else {
-			//TODO: It must be checked what we got in the rout (path) to validate it...
-			path = new StringBuilder(rout + J2PUML);
-		}
-		SimpleDateFormat instant = new SimpleDateFormat("ddMMyyyy_HM_mm", Locale.getDefault());
-		Date now = new Date();
+      path.append(fullName).append(".txt");
 
-		path.append(instant.format(now)).append(".txt");
-
-		return path.toString();
-	}
+      return path.toString();
+   }
 
 }
