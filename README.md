@@ -61,12 +61,13 @@ you can run the plugin in this project too (after installing, of course).
     <plugins>
       ...
       <plugin>
-          <artifactId>java2PlantUML-maven-plugin</artifactId>
-              <version>1.0.1</version>
-              <configuration>
-                  <goalPrefix>java2PlantUML</goalPrefix>
-              </configuration>
-          </plugin>
+         <groupId>com.github.juanmf</groupId>
+         <artifactId>java2PlantUML-maven-plugin</artifactId>
+         <version>1.0.1</version>
+         <configuration>
+           <goalPrefix>java2PlantUML</goalPrefix>
+         </configuration>
+      <plugin>
     </plugins>
   </build>
 </project>
@@ -88,9 +89,8 @@ You might want to remove the plugin markup from your pom after you got the desir
 Results
 =======
 
-The end result, after processing output with plantUML is a UML diagram rendered 
-by plant as per the instructions in the generated script, a run over this project
-renders:
+The end result is a file named "j2puml+now+.txt" that you can process with [PlantUML online Render](http://plantuml.com/plantuml) in order to get the UML diagram rendered 
+by PlantUML as per the instructions in the generated script. A run over this project renders:
 
 ![java2Plant diagram should appear here..](/doc/java2Plant.png?raw=true "Java2Plant Collaboration")
 
