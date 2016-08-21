@@ -117,8 +117,6 @@ public class Parser {
         return classes;
     }
 
-
-
     /**
      * For the given type, adds to relations:
      * <pre>

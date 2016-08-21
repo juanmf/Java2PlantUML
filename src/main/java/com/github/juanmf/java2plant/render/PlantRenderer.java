@@ -17,6 +17,7 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -218,6 +219,9 @@ public class PlantRenderer {
         }
     }
 
+    /**
+     * Used for Constructors or Methods
+     */
     static class MethodPrinter implements MemberPrinter {
         @Override
         public void addMember(Member m, List<String> plantMembers) {
@@ -230,24 +234,25 @@ public class PlantRenderer {
             String returnType = (m instanceof Method)
                     ? " : " + TypesHelper.getSimpleName(((Method) m).getReturnType().getName())
                     : "";
+            String params = buildParams(m);
+            String msg = String.format("%s %s(%s) %s", modif, name, params, returnType);
+            plantMembers.add(msg);
+        }
+
+        private String buildParams(Member m) {
             StringBuilder params = new StringBuilder();
-            List<? extends TypeVariable<?>> paramClasses = Arrays.asList(
-                    ((GenericDeclaration) m).getTypeParameters());
-            Iterator<? extends TypeVariable<?>> it = paramClasses.iterator();
+            Type[] paramClasses = m instanceof Method
+                    ? ((Method) m).getGenericParameterTypes()
+                    : ((Constructor) m).getGenericParameterTypes();
+            Iterator<? extends Type> it = Arrays.asList(paramClasses).iterator();
             while (it.hasNext()) {
-                TypeVariable<?> c = it.next();
-                params.append(TypesHelper.getSimpleName(c.getName()));
+                Type c = it.next();
+                params.append(TypesHelper.getSimpleName(c.toString()));
                 if (it.hasNext()) {
                     params.append(", ");
                 }
             }
-
-            if (m instanceof Constructor && 0 == params.length()
-                    && Modifiers.PUBLIC.equals(Modifiers.forModifier(m.getModifiers()))) {
-                return;
-            }
-            String msg = String.format("%s %s(%s) %s", modif, name, params.toString(), returnType);
-            plantMembers.add(msg);
+            return params.toString();
         }
     }
 

@@ -6,11 +6,22 @@ import java.net.URLClassLoader;
  * @author juanmf@gmail.com
  */
 public class TypesHelper {
+    private static final String REGEX_FOR_PACKAGE = "((([ice])(nterface|lass|num))? ?([\\w\\[][_\\w\\d\\$]+\\.)+)";
 
+    /**
+     * Should return a decent short version of the FQCN given:
+     *
+     * <code>
+     *     class java.lang.String -> c String
+     *     class java.lang.Class<? extends java.net.URLClassLoader> -> c Class<? extends URLClassLoader>
+     *     interface java.util.Collection<java.lang.Class<?>> -> i Collection<Class<?>>
+     * </code>
+     *
+     * @param fqcn
+     * @return
+     */
     public static String getSimpleName(String fqcn) {
-        int lastDotidx = fqcn.lastIndexOf(".");
-        String simpleName = -1 == lastDotidx ? fqcn : fqcn.substring(lastDotidx + 1);
-        return simpleName;
+        return fqcn.replaceAll(REGEX_FOR_PACKAGE, "$3 ");
     }
 
     public static Class<?> loadClass(String type, URLClassLoader classLoader) {

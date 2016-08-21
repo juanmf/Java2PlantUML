@@ -1,7 +1,7 @@
 # Java2PlantUML
 This maven plugin allows you to inspect compile time relations on classes 
 within the class path of your projects, and its dependencies. And renders a
-Class Diagram src for PlantUML in cli output as 
+Class Diagram src for [PlantUML](http://plantuml.com/) in cli output as 
 
 ```
 [INFO] Following is the PlantUML src: 
@@ -98,6 +98,6 @@ renders:
 TODO
 ====
  * Add Filters to CLI params
- instead of arrows.
  * represent Type parameters in class definitions i.e. public class SelectFieldFactory<D extends SelectFieldDefinition>
  * Render several diagrams, making focus on classes inside given packages.
+ 
