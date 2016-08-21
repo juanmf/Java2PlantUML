@@ -1,24 +1,12 @@
 package com.github.juanmf.java2plant.render;
 
-import com.github.juanmf.java2plant.render.filters.ChainFilter;
-import com.github.juanmf.java2plant.render.filters.Filter;
-import com.github.juanmf.java2plant.render.filters.Filters;
-import com.github.juanmf.java2plant.Parser;
-import com.github.juanmf.java2plant.structure.Aggregation;
-import com.github.juanmf.java2plant.structure.Extension;
-import com.github.juanmf.java2plant.structure.Relation;
-import com.github.juanmf.java2plant.structure.Use;
-import com.github.juanmf.java2plant.util.TypesHelper;
-import edu.emory.mathcs.backport.java.util.Collections;
-
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -28,8 +16,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.github.juanmf.java2plant.Parser;
+import com.github.juanmf.java2plant.render.filters.Filter;
+import com.github.juanmf.java2plant.render.filters.Filters;
+import com.github.juanmf.java2plant.structure.Relation;
+import com.github.juanmf.java2plant.structure.Use;
+import com.github.juanmf.java2plant.util.SaveFileHelper;
+import com.github.juanmf.java2plant.util.TypesHelper;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author juanmf@gmail.com
@@ -68,31 +65,41 @@ public class PlantRenderer {
         this.relationsFilter = relationsFilter;
     }
 
-    /**
-     * Render full contents
-     * <pre>
-     *   * Classes
-     *   * Relations
-     * </pre>
-     *
-     * @return palntUML src code
-     */
-    public String render() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("@startuml\n")
-                .append("' Created by juanmf@gmail.com\n\n")
-                .append("' Using left to right direction to try a better layout feel free to edit\n")
-                .append("left to right direction\n");
+	/**
+	 * Render full contents
+	 * 
+	 * <pre>
+	 *   * Classes
+	 *   * Relations
+	 * </pre>
+	 *
+	 * @return palntUML src code
+	 */
+	public String render() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("@startuml\n").append("' Created by juanmf@gmail.com\n\n")
+		      .append("' Using left to right direction to try a better layout feel free to edit\n")
+		      .append("left to right direction\n");
 
-        sb.append("' Participants \n\n");
-        addClasses(sb);
+		sb.append("' Participants \n\n");
+		addClasses(sb);
 
-        sb.append("\n' Relations \n\n");
-        addRelations(sb);
+		sb.append("\n' Relations \n\n");
+		addRelations(sb);
 
-        sb.append("@enduml\n");
-        return sb.toString();
-    }
+		sb.append("@enduml\n");
+
+		// TODO: Let´s decide if it is better to throw this exception so that we can log
+		// with Maven (getLog()) to alert the User there was a problem creating
+		// the TXT file
+		try {
+			SaveFileHelper.save(sb, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return sb.toString();
+	}
 
     /**
      * Basic Relations renderer, no filtering used.
@@ -100,7 +107,7 @@ public class PlantRenderer {
      * @param sb
      */
     protected void addRelations(StringBuilder sb) {
-        ArrayList<Relation> relations = new ArrayList(this.relations);
+        ArrayList<Relation> relations = new ArrayList<Relation>(this.relations);
         Collections.sort(relations, new Comparator<Relation>() {
             @Override
             public int compare(Relation o1, Relation o2) {
@@ -243,7 +250,7 @@ public class PlantRenderer {
             StringBuilder params = new StringBuilder();
             Type[] paramClasses = m instanceof Method
                     ? ((Method) m).getGenericParameterTypes()
-                    : ((Constructor) m).getGenericParameterTypes();
+                    : ((Constructor<?>) m).getGenericParameterTypes();
             Iterator<? extends Type> it = Arrays.asList(paramClasses).iterator();
             while (it.hasNext()) {
                 Type c = it.next();
