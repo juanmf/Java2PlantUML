@@ -156,9 +156,7 @@ public class Parser {
     protected static void addAggregations(Set<Relation> relations, Class<?> fromType) {
         Field[] declaredFields = fromType.getDeclaredFields();
         for (Field f : declaredFields) {
-            if (! Modifier.isPrivate(f.getModifiers())) {
-                addAggregation(relations, fromType, f);
-            }
+            addAggregation(relations, fromType, f);
         }
     }
 
