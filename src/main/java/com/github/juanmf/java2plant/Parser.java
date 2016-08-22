@@ -67,20 +67,19 @@ public class Parser {
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
 
-        return parse(packageToPase, relationTypeFilter, classesFilter, classLoadersList, relationsFilter);
+        return parse(packageToPase, relationTypeFilter, classesFilter, relationsFilter, classLoadersList);
     }
 
     public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
-                               Filter<Class<?>> classesFilter, ClassLoader classLoader, Filter<Relation> relationsFilter)
+                               Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter, ClassLoader classLoader)
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(classLoader);
-        return parse(packageToPase, relationTypeFilter, classesFilter, classLoadersList, relationsFilter);
+        return parse(packageToPase, relationTypeFilter, classesFilter, relationsFilter, classLoadersList);
     }
 
     public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
-                               Filter<Class<?>> classesFilter, List<ClassLoader> classLoadersList,
-                               Filter<Relation> relationsFilter)
+                               Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter, List<ClassLoader> classLoadersList)
     {
         Set<Relation> relations = new HashSet<Relation>();
         Set<Class<?>> classes = getTypes(packageToPase, classLoadersList);

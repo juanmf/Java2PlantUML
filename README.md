@@ -67,7 +67,7 @@ you can run the plugin in this project too (after installing, of course).
          <configuration>
            <goalPrefix>java2PlantUML</goalPrefix>
          </configuration>
-      <plugin>
+      </plugin>
     </plugins>
   </build>
 </project>

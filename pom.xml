@@ -78,13 +78,16 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!--groupId>com.github.juanmf</groupId-->
                 <artifactId>java2PlantUML-maven-plugin</artifactId>
                 <!-- This version should be consistent with this pom's /project/version-->
                 <version>1.0.1</version>
                 <configuration>
                     <goalPrefix>java2PlantUML</goalPrefix>
+                    <parse.relationTypeFilter>FILTER_ALLOW_ALL_RELATIONS</parse.relationTypeFilter>
+                    <parse.classesFilter>FILTER_FORBID_ANONIMOUS</parse.classesFilter>
+                    <parse.relationsFilter>FILTER_CHAIN_RELATION_STANDARD</parse.relationsFilter>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>

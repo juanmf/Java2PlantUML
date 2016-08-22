@@ -27,4 +27,9 @@ public class ChainFilter<T> implements Filter<T> {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return String.format("ChainFilter %s with: {%s}", super.toString(), filters.toString());
+    }
 }
