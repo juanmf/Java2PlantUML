@@ -1,4 +1,4 @@
-package com.github.juanmf.java2plant.goals;
+package com.github.juanmf.java2plant.goal;
 
 import java.io.File;
 import java.net.MalformedURLException;

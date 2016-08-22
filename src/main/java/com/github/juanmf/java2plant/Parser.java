@@ -91,16 +91,21 @@ public class Parser {
     }
 
     private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {
-        classLoadersList.add(ClasspathHelper.contextClassLoader());
-        classLoadersList.add(ClasspathHelper.staticClassLoader());
-        Collection<URL> urls = ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]));
-        CLASS_LOADER = new URLClassLoader(urls.toArray(new URL[0]));
+        Collection<URL> urls = getUrls(classLoadersList);
+        Set<Class<?>> classes = new HashSet<>();
+        for (String aPackage : packageToPase.split("\\s*,\\s*")) {
+            classes.addAll(getPackageTypes(aPackage, urls));
+        }
+        return classes;
+    }
+
+    private static Collection<? extends Class<?>> getPackageTypes(String packageToPase, Collection<URL> urls) {
+        Set<Class<?>> classes = new HashSet<>();
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner(), new TypeElementsScanner())
                 .setUrls(urls)
                 .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToPase)).exclude("java.*")));
 
-        Set<Class<?>> classes = new HashSet<>();
         Set<String> types;
         types = reflections.getStore().get("TypeElementsScanner").keySet();
         for (String type: types) {
@@ -115,6 +120,14 @@ public class Parser {
             }
         }
         return classes;
+    }
+
+    private static Collection<URL> getUrls(List<ClassLoader> classLoadersList) {
+        classLoadersList.add(ClasspathHelper.contextClassLoader());
+        classLoadersList.add(ClasspathHelper.staticClassLoader());
+        Collection<URL> urls = ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]));
+        CLASS_LOADER = new URLClassLoader(urls.toArray(new URL[0]));
+        return urls;
     }
 
     /**

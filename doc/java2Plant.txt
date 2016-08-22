@@ -184,7 +184,7 @@ class com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter {
 +  satisfy()  : boolean
 
 }
-class com.github.juanmf.java2plant.goals.Parse {
+class com.github.juanmf.java2plant.goal.Parse {
 -  filter : String
 -  project : MavenProject
 -  thePackage : String
@@ -305,7 +305,7 @@ com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  -up|>  com.githu
 com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
 com.github.juanmf.java2plant.structure.Aggregation  -up|>  com.github.juanmf.java2plant.structure.Relation
 com.github.juanmf.java2plant.render.filters.AllowedFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
-com.github.juanmf.java2plant.goals.Parse  -up|>  org.apache.maven.plugin.AbstractMojo
+com.github.juanmf.java2plant.goal.Parse  -up|>  org.apache.maven.plugin.AbstractMojo
 com.github.juanmf.java2plant.render.filters.ChainFilter  -up|>  com.github.juanmf.java2plant.render.filters.Filter
 com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter  -up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
 com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  -up|>  com.github.juanmf.java2plant.render.filters.AllowedRexegFilter
