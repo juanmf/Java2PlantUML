@@ -144,5 +144,6 @@ TODO
 ====
  * Represent Type parameters in class definitions i.e. public class SelectFieldFactory<D extends SelectFieldDefinition>
  * Render several diagrams, making focus on classes inside given packages.
- * follow ancestor chain for inheritance up to Object ()
- * for Ancestors of scanned Classes, show class details too.
+ * Add lollipop interfaces for specific ones.
+ * Add implemented interfaces.
+ * Add some indicator in super classes that the methods are overridden

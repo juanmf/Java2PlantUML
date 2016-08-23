@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.github.juanmf.java2plant.structure.Implementation;
 import com.github.juanmf.java2plant.util.CanonicalName;
 import com.github.juanmf.java2plant.util.TypesHelper;
 import com.google.common.collect.Sets;
@@ -95,7 +96,35 @@ public class Parser {
         for (String aPackage : packageToPase.split("\\s*,\\s*")) {
             classes.addAll(getPackageTypes(aPackage, urls));
         }
+        addSuperClassesAndInterfaces(classes);
         return classes;
+    }
+
+    private static void addSuperClassesAndInterfaces(Set<Class<?>> classes) {
+        Set<Class<?>> newClasses = new HashSet<>();
+        for (Class<?> c : classes) {
+            addSuperClass(c, newClasses);
+            addInterfaces(c, newClasses);
+        }
+        classes.addAll(newClasses);
+    }
+
+    private static void addInterfaces(Class<?> c, Set<Class<?>> newClasses) {
+        Class<?>[] interfaces = c.getInterfaces();
+        for (Class<?> i : interfaces) {
+            newClasses.add(i);
+            addInterfaces(i, newClasses);
+        }
+    }
+
+    private static void addSuperClass(Class<?> c, Set<Class<?>> newClasses) {
+        Class<?> superclass = c.getSuperclass();
+        if (null == superclass || Object.class.equals(superclass)) {
+            return;
+        }
+        newClasses.add(superclass);
+        addSuperClass(superclass, newClasses);
+        addInterfaces(superclass, newClasses);
     }
 
     private static Collection<? extends Class<?>> getPackageTypes(String packageToPase, Collection<URL> urls) {
@@ -151,7 +180,7 @@ public class Parser {
     protected static void addImplementations(Set<Relation> relations, Class<?> fromType) {
         Class<?>[] interfaces = fromType.getInterfaces();
         for (Class<?> i : interfaces) {
-            Relation anImplements = new Extension(fromType, i.getName());
+            Relation anImplements = new Implementation(fromType, i.getName());
             relations.add(anImplements);
         }
     }
@@ -207,7 +236,6 @@ public class Parser {
     }
 
     protected static void addUse(Set<Relation> relations, Class<?> fromType, Type toType, Member m, String msg) {
-//        String toName = toType.getName();
         String toName = toType.toString();
         if (isMulti(toType)) {
             if (! ((Class) toType).isArray()) {
@@ -223,7 +251,6 @@ public class Parser {
                 }
             }
             toName = CanonicalName.getClassName(((Class) toType).getName());
-            msg += ": []";
         }
         Relation use = new Use(fromType, toName, m, msg);
         relations.add(use);
@@ -234,10 +261,10 @@ public class Parser {
         addUse(relations, fromType, fromParameterType, m, name);
     }
 
-    protected static boolean isMulti(Type delegateType) {
-        return (delegateType instanceof Class) && (((Class) delegateType).isArray()
-                || Collection.class.isAssignableFrom((Class) delegateType)
-                || Map.class.isAssignableFrom((Class) delegateType));
+    protected static boolean isMulti(Type type) {
+        return (type instanceof Class) && (((Class) type).isArray()
+                || Collection.class.isAssignableFrom((Class) type)
+                || Map.class.isAssignableFrom((Class) type));
     }
 
     protected static void addAggregation(Set<Relation> relations, Class<?> fromType, Field f) {
