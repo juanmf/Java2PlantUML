@@ -28,7 +28,7 @@ import static com.github.juanmf.java2plant.render.filters.Filters.CHAIN_RELATION
 import static com.github.juanmf.java2plant.render.filters.Filters.FILTERS;
 
 /**
- * Usages:
+ * Usage:
  * <pre>
  * mvn   -Dparse.thePackage="com.my.package" clean compile java2PlantUML:parse
  * mvn   -Dparse.thePackage="com.my.package, com.other.package" clean compile java2PlantUML:parse
@@ -73,7 +73,7 @@ import static com.github.juanmf.java2plant.render.filters.Filters.FILTERS;
  *      clean compile java2PlantUML:parse
  * </pre>
  *
- * Of course you can use all three cusom chain filters un a single run.
+ * Of course you can use all three custom chain filters un a single run.
  *
  * @author juanmf@gmail.com
  */
