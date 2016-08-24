@@ -7,6 +7,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,6 +28,7 @@ import com.github.juanmf.java2plant.util.SaveFileHelper;
 import com.github.juanmf.java2plant.util.TypesHelper;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author juanmf@gmail.com
@@ -154,7 +156,7 @@ public class PlantRenderer {
     protected void addClasses(StringBuilder sb) {
         for (Class<?> c : types) {
         	if (! classesFilter.satisfy(c)){
-                System.out.println("Not adding class " + c);
+                System.out.println("ClassFilter rejected class " + c);
                 continue;
             }
             addClass(sb, c);
@@ -163,9 +165,24 @@ public class PlantRenderer {
 
     protected void addClass(StringBuilder sb, Class<?> aClass) {
         String classDeclaration = aClass.isEnum() ? "enum " + aClass.getName() : aClass.toString();
-        sb.append(classDeclaration).append(" {\n");
+        sb.append(classDeclaration);
+        addClassTypeParams(sb, aClass);
+        sb.append(" {\n");
         renderClassMembers(sb, aClass);
         sb.append("\n}\n");
+    }
+
+    private void addClassTypeParams(StringBuilder sb, Class<?> aClass) {
+        List<String> typeParams = new ArrayList<>();
+        // TODO: we are leaving lower bounds out, e.g. <? super Integer>
+        for (TypeVariable t : aClass.getTypeParameters()) {
+            Type[] bounds = t.getBounds();
+            String jointBounds = TypesHelper.getSimpleName(StringUtils.join(bounds, "&"));
+            typeParams.add(t.getName() + " extends " + jointBounds);
+        }
+        if (0 < typeParams.size()) {
+            sb.append(" <").append(StringUtils.join(typeParams, ", ")).append(">");
+        }
     }
 
     private void renderClassMembers(StringBuilder sb, Class<?> aClass) {
@@ -197,7 +214,6 @@ public class PlantRenderer {
         for (Member m : declaredMembers) {
             memberPrinters.get(m.getClass()).addMember(m, plantMembers);
         }
-
     }
 
     interface MemberPrinter {
@@ -213,8 +229,10 @@ public class PlantRenderer {
                 return;
             }
 
-            String msg = String.format("%s %s : %s", Modifiers.forModifier(f.getModifiers()), f.getName(),
-                    TypesHelper.getSimpleName(f.getType().getName()));
+            String msg = String.format("%s %s : %s",
+                    Modifiers.forModifier(f.getModifiers()),
+                    f.getName(),
+                    TypesHelper.getSimpleName(f.getGenericType().toString()));
             plantMembers.add(msg);
         }
     }

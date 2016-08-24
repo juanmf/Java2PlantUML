@@ -13,6 +13,13 @@ import java.util.regex.Pattern;
  */
 public class ForbiddenRexegFilter<C extends Class<?>> extends AllowedRexegFilter<C> {
 
+	/**
+	 * {@link #allowedPatterns} actually should hold forbidden items
+	 *
+	 * @param item a Class to match against.
+	 *
+	 * @return false if {@link #allowedPatterns} contains a pattern that matches item
+     */
     @Override
 	public boolean satisfy(C item) {
 		for (Pattern p : allowedPatterns) {

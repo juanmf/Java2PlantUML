@@ -20,12 +20,8 @@ import java.util.Set;
 import com.github.juanmf.java2plant.structure.Implementation;
 import com.github.juanmf.java2plant.util.CanonicalName;
 import com.github.juanmf.java2plant.util.TypesHelper;
-import com.google.common.collect.Sets;
-import com.sun.org.apache.xpath.internal.SourceTree;
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
-import org.reflections.Store;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeElementsScanner;
@@ -270,6 +266,7 @@ public class Parser {
     protected static void addAggregation(Set<Relation> relations, Class<?> fromType, Field f) {
         Class<?> delegateType = f.getType();
         String varName = f.getName();
+        String message = varName + ": " + TypesHelper.getSimpleName(f.getGenericType().toString());
         String toCardinal = "1";
         String toName = delegateType.getName();
         if (isMulti(delegateType)) {
@@ -277,15 +274,14 @@ public class Parser {
             if (! delegateType.isArray()) {
                 Set<String> typeVars = getTypeParams(f);
                 for (String type : typeVars) {
-                    Relation aggregation = new Aggregation(
-                            fromType, type, f, toCardinal, varName + ": " + delegateType.getName());
+                    Relation aggregation = new Aggregation(fromType, type, f, toCardinal, message);
                     relations.add(aggregation);
                 }
                 return;
             }
             toName = CanonicalName.getClassName(delegateType.getName());
         }
-        Relation aggregation = new Aggregation(fromType, toName, f, toCardinal, varName);
+        Relation aggregation = new Aggregation(fromType, toName, f, toCardinal, message);
         relations.add(aggregation);
     }
 

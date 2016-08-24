@@ -66,6 +66,7 @@ public class Filters {
     public static final PredicateFilter<Relation> FILTER_RELATION_FORBID_AGGREGATION_FROM_PRIVATE;
     public static final RelationFieldsFilter FILTER_RELATION_FORBID_TO_PRIMITIVE;
     public static final RelationFieldsFilter FILTER_RELATION_FORBID_TO_BASE;
+    public static final RelationFieldsFilter FILTER_RELATION_FORBID_FROM_BASE;
     public static final RelationFieldsFilter FILTER_RELATION_FORBID_FROM_ANONIMOUS;
     public static final RelationFieldsFilter FILTER_RELATION_ALLOW_ALL;
 
@@ -118,6 +119,7 @@ public class Filters {
 
         FILTER_RELATION_FORBID_TO_PRIMITIVE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.TO);
         FILTER_RELATION_FORBID_TO_BASE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.TO);
+        FILTER_RELATION_FORBID_FROM_BASE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
         FILTER_RELATION_FORBID_FROM_ANONIMOUS = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
         FILTER_RELATION_ALLOW_ALL = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
 
@@ -148,23 +150,26 @@ public class Filters {
         FILTER_FORBID_USES.addItem(Use.class);
         FILTER_FORBID_AGGREGATION.addItem(Aggregation.class);
         FILTER_FORBID_EXTENSION.addItem(Extension.class);
-        FILTER_FORBID_ANONIMOUS.addForbiddenItem(Pattern.compile(".*\\$\\d.*"));
-        FILTER_FORBID_PRIMITIVES.addForbiddenItem(Pattern.compile("[^\\.]"));
-        FILTER_FORBID_BASE_CLASSES.addForbiddenItem(Pattern.compile("^java\\.lang\\..*"));
+        FILTER_FORBID_ANONIMOUS.addAllowedItem(Pattern.compile(".*\\$\\d.*"));
+        FILTER_FORBID_PRIMITIVES.addAllowedItem(Pattern.compile("[^.]"));
+        FILTER_FORBID_BASE_CLASSES.addAllowedItem(Pattern.compile("java\\.lang\\..*"));
 
         FILTER_RELATION_FORBID_TO_PRIMITIVE.setFilter(FILTER_FORBID_PRIMITIVES);
         FILTER_RELATION_FORBID_TO_BASE.setFilter(FILTER_FORBID_BASE_CLASSES);
+        FILTER_RELATION_FORBID_FROM_BASE.setFilter(FILTER_FORBID_BASE_CLASSES);
         FILTER_RELATION_FORBID_FROM_ANONIMOUS.setFilter(FILTER_FORBID_ANONIMOUS);
         FILTER_RELATION_ALLOW_ALL.setFilter(FILTER_ALLOW_ALL_CLASSES);
 
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_TO_PRIMITIVE);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_TO_BASE);
+        FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_FROM_BASE);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_FROM_ANONIMOUS);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_FORBID_ENUM_AGGREGATION_LOOP);
 
         FILTER_CHAIN_RELATION_TYPE_STANDARD.addFilter(FILTER_ALLOW_ALL_RELATIONS);
 
         FILTER_CHAIN_CLASSES_STANDARD.addFilter(FILTER_FORBID_ANONIMOUS);
+        FILTER_CHAIN_CLASSES_STANDARD.addFilter(FILTER_FORBID_BASE_CLASSES);
     }
 
     private static void addFiltersToMap() {

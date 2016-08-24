@@ -13,11 +13,11 @@ public class AllowedRexegFilter<C extends Class<?>> implements Filter<C> {
     
 	protected Set<Pattern> allowedPatterns = new HashSet<>();
 	
-    public void addForbiddenItem(Pattern pattern) {
+    public void addAllowedItem(Pattern pattern) {
     	allowedPatterns.add(pattern);
     }
 
-    public boolean removeForbiddenItem(Pattern pattern) {
+    public boolean removeAllowedItem(Pattern pattern) {
     	return allowedPatterns.remove(pattern);
     }
 

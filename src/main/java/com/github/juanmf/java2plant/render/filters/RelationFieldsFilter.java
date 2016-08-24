@@ -2,13 +2,16 @@ package com.github.juanmf.java2plant.render.filters;
 
 
 import com.github.juanmf.java2plant.Parser;
+import com.github.juanmf.java2plant.structure.Aggregation;
 import com.github.juanmf.java2plant.structure.Relation;
 import com.github.juanmf.java2plant.util.TypesHelper;
+
+import java.util.Comparator;
 
 /**
  * @author juanmf@gmail.com
  */
-public class RelationFieldsFilter implements Filter<Relation> {
+public class RelationFieldsFilter<T extends Relation> implements Filter<T> {
 
     private Filter<Class<?>> filter = Filters.FILTER_ALLOW_ALL_CLASSES;
     private final RelationParts part;
