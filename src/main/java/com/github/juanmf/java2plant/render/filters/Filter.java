@@ -7,5 +7,5 @@ package com.github.juanmf.java2plant.render.filters;
  * @author mgiamberardino
  */
 public interface Filter<T> {
-	boolean satisfy(T item);
+	boolean satisfy(T item, StringBuilder sb);
 }

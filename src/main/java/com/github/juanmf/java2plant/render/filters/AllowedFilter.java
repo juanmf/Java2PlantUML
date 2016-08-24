@@ -1,8 +1,6 @@
 package com.github.juanmf.java2plant.render.filters;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -10,9 +8,18 @@ import java.util.Set;
  */
 public class AllowedFilter<T> implements Filter<T> {
 
+	protected final NotifierOnFiltering<T> notifier;
 	protected Set<T> allowedItems = new HashSet<>();
 
-    public void addItem(T item) {
+	public AllowedFilter() {
+		this(new NotifierOnFiltering<T>());
+	}
+
+	public AllowedFilter(NotifierOnFiltering<T> notifier) {
+		this.notifier = notifier;
+	}
+
+	public void addItem(T item) {
     	allowedItems.add(item);
     }
 
@@ -21,7 +28,7 @@ public class AllowedFilter<T> implements Filter<T> {
     }
 
 	@Override
-	public boolean satisfy(T item) {
-		return allowedItems.contains(item);
+	public boolean satisfy(T item, StringBuilder sb) {
+		return notifier.getResultAndNotify(allowedItems.contains(item), item, sb);
 	}
 }

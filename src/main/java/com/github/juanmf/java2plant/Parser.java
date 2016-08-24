@@ -20,6 +20,7 @@ import java.util.Set;
 import com.github.juanmf.java2plant.structure.Implementation;
 import com.github.juanmf.java2plant.util.CanonicalName;
 import com.github.juanmf.java2plant.util.TypesHelper;
+import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -50,6 +51,7 @@ import com.github.juanmf.java2plant.structure.Use;
 
 public class Parser {
     public static URLClassLoader CLASS_LOADER = null;
+    private static final EventBus eventBus = new EventBus();
 
     /**
      * Parse the given package recursively, then iterates over found types to fetch their relations.
@@ -84,6 +86,10 @@ public class Parser {
             addFromTypeRelations(relations, aClass);
         }
         return new PlantRenderer(classes, relations, relationTypeFilter, classesFilter, relationsFilter).render();
+    }
+
+    public static EventBus getEventBus() {
+        return eventBus;
     }
 
     private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {

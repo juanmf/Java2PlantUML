@@ -2,6 +2,7 @@ package com.github.juanmf.java2plant.render.filters;
 
 import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.render.PlantRenderer;
+import com.github.juanmf.java2plant.render.event.RejectingBaseInterfaceEvent;
 import com.github.juanmf.java2plant.structure.Aggregation;
 import com.github.juanmf.java2plant.structure.Extension;
 import com.github.juanmf.java2plant.structure.Relation;
@@ -118,7 +119,10 @@ public class Filters {
         FILTER_CHAIN_CLASSES_CUSTOM = new ChainFilter<>();
 
         FILTER_RELATION_FORBID_TO_PRIMITIVE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.TO);
-        FILTER_RELATION_FORBID_TO_BASE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.TO);
+        FILTER_RELATION_FORBID_TO_BASE = new RelationFieldsFilter(
+                RelationFieldsFilter.RelationParts.TO,
+                new NotifierOnFiltering(NotifierOnFiltering.OnResult.FAILURE, new RejectingBaseInterfaceEvent())
+            );
         FILTER_RELATION_FORBID_FROM_BASE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
         FILTER_RELATION_FORBID_FROM_ANONIMOUS = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
         FILTER_RELATION_ALLOW_ALL = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);

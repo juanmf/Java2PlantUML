@@ -27,6 +27,7 @@ import com.github.juanmf.java2plant.structure.Use;
 import com.github.juanmf.java2plant.util.SaveFileHelper;
 import com.github.juanmf.java2plant.util.TypesHelper;
 
+import com.google.common.eventbus.EventBus;
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,8 +48,9 @@ public class PlantRenderer {
         memberPrinters.put(Field.class, new FieldPrinter());
         memberPrinters.put(Constructor.class, mp);
         memberPrinters.put(Method.class, mp);
+        EventBus eb = Parser.getEventBus();
+        eb.register(new LollipopInterfaceListener());
     }
-
 
     public PlantRenderer(Set<Class<?>> types, Set<Relation> relations) {
         this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_ALLOW_ALL_CLASSES, Filters.FILTER_CHAIN_RELATION_STANDARD);
@@ -110,6 +112,17 @@ public class PlantRenderer {
      */
     protected void addRelations(StringBuilder sb) {
         ArrayList<Relation> relations = new ArrayList<Relation>(this.relations);
+        sortRelations(relations);
+        for (Relation r : relations) {
+            if (! relationsTypeFilter.satisfy(r.getClass(), sb)
+                    || ! relationsFilter.satisfy(r, sb)) {
+                continue;
+            }
+            addRelation(sb, r);
+        }
+    }
+
+    private void sortRelations(ArrayList<Relation> relations) {
         Collections.sort(relations, new Comparator<Relation>() {
             @Override
             public int compare(Relation o1, Relation o2) {
@@ -119,13 +132,6 @@ public class PlantRenderer {
                 return result;
             }
         });
-        for (Relation r : relations) {
-            if (! relationsTypeFilter.satisfy(r.getClass())
-                    || ! relationsFilter.satisfy(r)) {
-                continue;
-            }
-            addRelation(sb, r);
-        }
     }
 
     private void addRelation(StringBuilder sb, Relation r) {
@@ -155,7 +161,7 @@ public class PlantRenderer {
      */
     protected void addClasses(StringBuilder sb) {
         for (Class<?> c : types) {
-        	if (! classesFilter.satisfy(c)){
+        	if (! classesFilter.satisfy(c, sb)){
                 System.out.println("ClassFilter rejected class " + c);
                 continue;
             }

@@ -19,9 +19,9 @@ public class ChainFilter<T> implements Filter<T> {
     }
 
     @Override
-    public boolean satisfy(T item) {
+    public boolean satisfy(T item, StringBuilder sb) {
         for (Filter<T> f : filters) {
-            if (! f.satisfy(item)) {
+            if (! f.satisfy(item, sb)) {
                 return false;
             }
         }
