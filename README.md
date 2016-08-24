@@ -142,8 +142,7 @@ by PlantUML as per the instructions in the generated script. A run over this pro
 
 TODO
 ====
- * Represent Type parameters in class definitions i.e. public class SelectFieldFactory<D extends SelectFieldDefinition>
  * Render several diagrams, making focus on classes inside given packages.
- * Add lollipop interfaces for specific ones.
  * Add implemented interfaces.
  * Add some indicator in super classes that the methods are overridden
+ * Type arguments of Map are not being shown as aggregations.
