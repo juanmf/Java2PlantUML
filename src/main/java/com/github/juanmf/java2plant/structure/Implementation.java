@@ -7,7 +7,7 @@ import com.github.juanmf.java2plant.util.TypesHelper;
  */
 public class Implementation extends Extension {
     public static final String RELATION_TYPE_IMPLEMENTATION = " ..up|> ";
-    public static final String RELATION_TYPE_LOLLIPOP = " ..() ";
+    public static final String RELATION_TYPE_LOLLIPOP = " -() ";
 
     public Implementation(Class<?> from, String to) {
         super(from, to);
@@ -19,7 +19,7 @@ public class Implementation extends Extension {
     }
 
     public String asLollipop() {
-        return String.format("%s %s %s", getFromType().getName(), RELATION_TYPE_LOLLIPOP,
+        return String.format("\"%s\" %s %s", getFromType().getName(), RELATION_TYPE_LOLLIPOP,
                 TypesHelper.getSimpleName(getToType()));
     }
 }
