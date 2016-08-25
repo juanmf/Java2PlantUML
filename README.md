@@ -146,3 +146,4 @@ TODO
  * Add implemented interfaces.
  * Add some indicator in super classes that the methods are overridden
  * Type arguments of Map are not being shown as aggregations.
+ * Aggeration to Set<SuperClass> from SubClass not shown.

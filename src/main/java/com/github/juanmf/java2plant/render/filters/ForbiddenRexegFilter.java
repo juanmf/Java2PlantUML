@@ -22,15 +22,10 @@ public class ForbiddenRexegFilter<C extends Class<?>> extends AllowedRexegFilter
 	 *
 	 * @param item a Class to match against.
 	 *
-	 * @param sb
 	 * @return false if {@link #allowedPatterns} contains a pattern that matches item
      */
     @Override
-	public boolean satisfy(C item, StringBuilder sb) {
-		return notifier.getResultAndNotify(doSatisfy(item), item, sb);
-	}
-
-	public boolean doSatisfy(C item) {
+	protected boolean doSatisfy(C item) {
 		for (Pattern p : allowedPatterns) {
 			if (p.matcher(item.getName()).matches()) {
 				return false;

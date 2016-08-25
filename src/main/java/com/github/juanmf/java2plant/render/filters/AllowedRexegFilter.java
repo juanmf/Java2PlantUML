@@ -9,17 +9,16 @@ import java.util.regex.Pattern;
  *
  * @author juanmf@gmail.com
  */
-public class AllowedRexegFilter<C extends Class<?>> implements Filter<C> {
+public class AllowedRexegFilter<C extends Class<?>>  extends NotifyingFilter<C> {
 
-	protected final NotifierOnFiltering<C> notifier;
 	protected Set<Pattern> allowedPatterns = new HashSet<>();
 
 	public AllowedRexegFilter() {
-		this(new NotifierOnFiltering<C>());
+		super();
 	}
 
 	public AllowedRexegFilter(NotifierOnFiltering<C> notifier) {
-		this.notifier = notifier;
+		super(notifier);
 	}
 
 	public void addAllowedItem(Pattern pattern) {
@@ -31,12 +30,7 @@ public class AllowedRexegFilter<C extends Class<?>> implements Filter<C> {
     }
 
 	@Override
-	public boolean satisfy(C item, StringBuilder sb) {
-		return notifier.getResultAndNotify(doSatisfy(item), item, sb);
-
-	}
-
-	private boolean doSatisfy(C item) {
+	protected boolean doSatisfy(C item) {
 		for (Pattern p : allowedPatterns) {
 			if (p.matcher(item.getName()).matches()) {
 				return true;

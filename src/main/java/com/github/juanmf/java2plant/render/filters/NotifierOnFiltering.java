@@ -4,6 +4,8 @@ import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.render.event.RenderEvent;
 
 /**
+ * @param <T> Must be the same type used as parameter to the Filter for which this notifier is being set.
+ *
  * @author juanmf@gmail.com
  */
 public class NotifierOnFiltering <T> {
@@ -11,16 +13,11 @@ public class NotifierOnFiltering <T> {
     private final boolean notify;
     private final OnResult onResult;
     private RenderEvent<T> event;
-    private Filter<T> filter;
 
     public NotifierOnFiltering(OnResult onResult, RenderEvent<T> event) {
         this.onResult = onResult;
         this.event = event;
         this.notify = true;
-    }
-
-    public void setFilter(Filter<T> filter) {
-        this.filter = filter;
     }
 
     public NotifierOnFiltering() {

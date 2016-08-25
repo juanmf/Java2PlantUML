@@ -6,17 +6,16 @@ import java.util.Set;
 /**
  * @author juanmf@gmail.com
  */
-public class AllowedFilter<T> implements Filter<T> {
+public class AllowedFilter<T> extends NotifyingFilter<T> {
 
-	protected final NotifierOnFiltering<T> notifier;
 	protected Set<T> allowedItems = new HashSet<>();
 
 	public AllowedFilter() {
-		this(new NotifierOnFiltering<T>());
+		super();
 	}
 
 	public AllowedFilter(NotifierOnFiltering<T> notifier) {
-		this.notifier = notifier;
+		super(notifier);
 	}
 
 	public void addItem(T item) {
@@ -28,7 +27,7 @@ public class AllowedFilter<T> implements Filter<T> {
     }
 
 	@Override
-	public boolean satisfy(T item, StringBuilder sb) {
-		return notifier.getResultAndNotify(allowedItems.contains(item), item, sb);
+	protected boolean doSatisfy(T item) {
+		return allowedItems.contains(item);
 	}
 }

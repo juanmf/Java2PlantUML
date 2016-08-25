@@ -14,7 +14,7 @@ public class ForbiddenFilter<T> extends AllowedFilter<T> {
 	}
 
 	@Override
-	public boolean satisfy(T item, StringBuilder sb) {
+	protected boolean doSatisfy(T item) {
 		return ! allowedItems.contains(item);
 	}
 }
