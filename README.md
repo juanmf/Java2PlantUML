@@ -143,7 +143,5 @@ by PlantUML as per the instructions in the generated script. A run over this pro
 TODO
 ====
  * Render several diagrams, making focus on classes inside given packages.
- * Add implemented interfaces.
  * Add some indicator in super classes that the methods are overridden
- * Type arguments of Map are not being shown as aggregations.
- * Aggeration to Set<SuperClass> from SubClass not shown.
+ * Optionally Add a hiararchy top to bottom.
