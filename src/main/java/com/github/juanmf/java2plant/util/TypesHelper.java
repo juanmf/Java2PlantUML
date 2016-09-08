@@ -16,6 +16,8 @@
 package com.github.juanmf.java2plant.util;
 
 import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author juanmf@gmail.com
@@ -47,6 +49,10 @@ public class TypesHelper {
                     "Issues loading type %s. \n  Throwed: %s: %s. \n  With Loader: %s", type, e.getClass().getName(),
                     e.getMessage(), null == classLoader ? "null" : classLoader.getClass().getName()
                 ));
+
+            if (null != classLoader) {
+                return loadClass(type, null);
+            }
         } catch (Exception e) {
             System.out.println(String.format(
                     "Unhandled Exception while loading %s!! %s: %s", type, e.getClass().getName(), e.getMessage())
@@ -54,5 +60,16 @@ public class TypesHelper {
             throw e;
         }
         return null;
+    }
+
+    /**
+     * Splits the packages list into a List of individual relevant packages or Classes.
+     * Expects a comma separated list of packages/Calsses names.
+     *
+     * @param packages
+     * @return The list of relevant packages or Classes
+     */
+    public static List<String> splitPackages(String packages) {
+        return Arrays.asList(packages.trim().split("\\s*,\\s*"));
     }
 }

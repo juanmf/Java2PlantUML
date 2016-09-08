@@ -23,26 +23,26 @@ import java.util.Set;
  */
 public class AllowedFilter<T> extends NotifyingFilter<T> {
 
-	protected Set<T> allowedItems = new HashSet<>();
+    protected Set<T> allowedItems = new HashSet<>();
 
-	public AllowedFilter() {
-		super();
-	}
+    public AllowedFilter() {
+        super();
+    }
 
-	public AllowedFilter(NotifierOnFiltering<T> notifier) {
-		super(notifier);
-	}
+    public AllowedFilter(NotifierOnFiltering<T> notifier) {
+        super(notifier);
+    }
 
-	public void addItem(T item) {
-    	allowedItems.add(item);
+    public void addItem(T item) {
+        allowedItems.add(item);
     }
 
     public boolean removeItem(T item) {
-    	return allowedItems.remove(item);
+        return allowedItems.remove(item);
     }
 
-	@Override
-	protected boolean doSatisfy(T item) {
-		return allowedItems.contains(item);
-	}
+    @Override
+    protected boolean doSatisfy(T item) {
+        return allowedItems.contains(item);
+    }
 }

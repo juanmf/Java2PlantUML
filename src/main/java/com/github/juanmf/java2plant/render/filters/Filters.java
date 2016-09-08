@@ -146,7 +146,6 @@ public class Filters {
             @Override
             public boolean apply(@Nullable Relation relation) {
                 Class<?> toType = TypesHelper.loadClass(relation.getToType(), Parser.CLASS_LOADER);
-                toType = null != toType ? toType : TypesHelper.loadClass(relation.getToType(), null);
                 return ! Aggregation.class.equals(relation.getClass())
                         || ! (relation.getFromType().isEnum() && relation.getFromType().equals(toType));
             }

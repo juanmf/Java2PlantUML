@@ -27,12 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.render.filters.Filter;
@@ -50,13 +48,17 @@ import org.apache.commons.lang3.StringUtils;
  * @author juanmf@gmail.com
  */
 public class PlantRenderer {
+    private static final Map<Class<? extends Member>, MemberPrinter> memberPrinters = new HashMap<>();
+
     private final Set<Class<?>> types;
     private final Set<Relation> relations;
+
     private final Filter<Class<?>> classesFilter;
     private final Filter<Class<? extends Relation>> relationsTypeFilter;
-    private Filter<Relation> relationsFilter;
-    private final Set<Pattern> toTypesToShowAsMember;
-    private static final Map<Class<? extends Member>, MemberPrinter> memberPrinters = new HashMap<>();
+    private final Filter<Relation> relationsFilter;
+
+    private final NotesRenderer notesRenderer;
+    private final String relevantPackages;
 
     static {
         MethodPrinter mp = new MethodPrinter();
@@ -67,58 +69,75 @@ public class PlantRenderer {
         eb.register(new LollipopInterfaceListener());
     }
 
-    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations) {
-        this(types, relations, Filters.FILTER_ALLOW_ALL_RELATIONS, Filters.FILTER_ALLOW_ALL_CLASSES, Filters.FILTER_CHAIN_RELATION_STANDARD);
+    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, String relevantPackages) {
+        this(types, relations, relevantPackages, Filters.FILTER_CHAIN_RELATION_TYPE_STANDARD, Filters.FILTER_CHAIN_CLASSES_STANDARD,
+                Filters.FILTER_CHAIN_RELATION_STANDARD
+            );
     }
 
-    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, Filter<Class<? extends Relation>> relationTypeFilter,
+    public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, String relevantPackages, Filter<Class<? extends Relation>> relationTypeFilter,
                          Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter)
     {
         this.types = types;
         this.relations = relations;
         this.relationsTypeFilter = relationTypeFilter;
         this.classesFilter = classesFilter;
-        toTypesToShowAsMember = new HashSet<>();
-        toTypesToShowAsMember.add(Pattern.compile("^java.lang.*"));
-        toTypesToShowAsMember.add(Pattern.compile("^[^\\$]*"));
         this.relationsFilter = relationsFilter;
+        this.notesRenderer = new NotesRenderer();
+        this.relevantPackages = relevantPackages;
     }
 
-	/**
-	 * Render full contents
-	 * 
-	 * <pre>
-	 *   * Classes
-	 *   * Relations
-	 * </pre>
-	 *
-	 * @return palntUML src code
-	 */
-	public String render() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("@startuml\n").append("' Created by juanmf@gmail.com\n\n")
-		      .append("' Using left to right direction to try a better layout feel free to edit\n")
-		      .append("left to right direction\n");
+    /**
+     * Render full contents
+     * 
+     * <pre>
+     *   * Classes
+     *   * Relations
+     * </pre>
+     *
+     * @return palntUML src code
+     */
+    public String render() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("@startuml\n").append("' Created by juanmf@gmail.com\n\n")
+              .append("' Using left to right direction to try a better layout feel free to edit\n")
+              .append("left to right direction\n");
 
-		sb.append("' Participants \n\n");
-		addClasses(sb);
+        sb.append("' Participants \n\n");
+        addClasses(sb);
 
-		sb.append("\n' Relations \n\n");
-		addRelations(sb);
+        sb.append("\n' Relations \n\n");
+        addRelations(sb);
 
-		sb.append("@enduml\n");
+        sb.append("\n' Notes \n\n");
+        addNotes(sb);
 
-		// TODO: Let´s decide if it is better to throw this exception so that we can log
-		// with Maven (getLog()) to alert the User there was a problem creating
-		// the TXT file
-		try {
-			SaveFileHelper.save(sb, null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        sb.append("@enduml\n");
 
-		return sb.toString();
-	}
+        // TODO: Let´s decide if it is better to throw this exception so that we can log
+        // with Maven (getLog()) to alert the User there was a problem creating
+        // the TXT file
+        try {
+            SaveFileHelper.save(sb, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Adds notes to the diagram src, so that it's easy to find relevant Classes in the resulting diagram
+     *
+     * @param sb
+     */
+    private void addNotes(StringBuilder sb) {
+        for (String aClassOrPackage : TypesHelper.splitPackages(relevantPackages)) {
+            if (null != TypesHelper.loadClass(aClassOrPackage, Parser.CLASS_LOADER)) {
+                notesRenderer.render(sb, NotesRenderer.NOTE_RELEVANT_CLASS, aClassOrPackage);
+            }
+        }
+    }
 
     /**
      * Basic Relations renderer, no filtering used.
@@ -158,7 +177,6 @@ public class PlantRenderer {
 
     private boolean isToTypeInAggregations(Relation r) {
         Class<?> toType = TypesHelper.loadClass(r.getToType(), Parser.CLASS_LOADER);
-        toType = null == toType ? TypesHelper.loadClass(r.getToType(), null) : toType;
         Class<?> origin = r.getFromType();
         for (Field f: origin.getDeclaredFields()) {
             // TODO: There migth be cases where toType is a generic Type param and this won't do well e.g. Collection<Type>
@@ -176,7 +194,7 @@ public class PlantRenderer {
      */
     protected void addClasses(StringBuilder sb) {
         for (Class<?> c : types) {
-        	if (! classesFilter.satisfy(c, sb)){
+            if (! classesFilter.satisfy(c, sb)){
                 System.out.println("ClassFilter rejected class " + c);
                 continue;
             }

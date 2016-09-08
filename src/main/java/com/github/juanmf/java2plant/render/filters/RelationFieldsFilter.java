@@ -57,7 +57,6 @@ public class RelationFieldsFilter<T extends Relation> implements Filter<T> {
             public Class<?> extract(Relation relation) {
                 String toType = relation.getToType();
                 Class<?> aClass = TypesHelper.loadClass(toType, Parser.CLASS_LOADER);
-                aClass = null == aClass ? TypesHelper.loadClass(toType, null) : aClass;
                 return aClass;
             }
         }),

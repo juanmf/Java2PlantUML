@@ -100,7 +100,7 @@ public class Parser {
         for (Class<?> aClass : classes) {
             addFromTypeRelations(relations, aClass);
         }
-        return new PlantRenderer(classes, relations, relationTypeFilter, classesFilter, relationsFilter).render();
+        return new PlantRenderer(classes, relations, packageToPase, relationTypeFilter, classesFilter, relationsFilter).render();
     }
 
     public static EventBus getEventBus() {
@@ -110,7 +110,7 @@ public class Parser {
     private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {
         Collection<URL> urls = getUrls(classLoadersList);
         Set<Class<?>> classes = new HashSet<>();
-        for (String aPackage : packageToPase.split("\\s*,\\s*")) {
+        for (String aPackage : TypesHelper.splitPackages(packageToPase)) {
             classes.addAll(getPackageTypes(aPackage, urls));
         }
         addSuperClassesAndInterfaces(classes);
@@ -155,9 +155,6 @@ public class Parser {
         types = reflections.getStore().get("TypeElementsScanner").keySet();
         for (String type: types) {
             Class<?> aClass = TypesHelper.loadClass(type, CLASS_LOADER);
-            if (null == aClass) {
-                aClass = TypesHelper.loadClass(type, null);
-            }
             boolean wantedElement = StringUtils.startsWith(type, packageToPase);
             if (null != aClass && wantedElement) {
                 System.out.println("looking up for type: " + type);

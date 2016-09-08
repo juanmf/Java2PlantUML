@@ -26,31 +26,31 @@ import java.util.regex.Pattern;
  */
 public class AllowedRexegFilter<C extends Class<?>>  extends NotifyingFilter<C> {
 
-	protected Set<Pattern> allowedPatterns = new HashSet<>();
+    protected Set<Pattern> allowedPatterns = new HashSet<>();
 
-	public AllowedRexegFilter() {
-		super();
-	}
+    public AllowedRexegFilter() {
+        super();
+    }
 
-	public AllowedRexegFilter(NotifierOnFiltering<C> notifier) {
-		super(notifier);
-	}
+    public AllowedRexegFilter(NotifierOnFiltering<C> notifier) {
+        super(notifier);
+    }
 
-	public void addAllowedItem(Pattern pattern) {
-    	allowedPatterns.add(pattern);
+    public void addAllowedItem(Pattern pattern) {
+        allowedPatterns.add(pattern);
     }
 
     public boolean removeAllowedItem(Pattern pattern) {
-    	return allowedPatterns.remove(pattern);
+        return allowedPatterns.remove(pattern);
     }
 
-	@Override
-	protected boolean doSatisfy(C item) {
-		for (Pattern p : allowedPatterns) {
-			if (p.matcher(item.getName()).matches()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    protected boolean doSatisfy(C item) {
+        for (Pattern p : allowedPatterns) {
+            if (p.matcher(item.getName()).matches()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -145,3 +145,4 @@ TODO
  * Render several diagrams, making focus on classes inside given packages.
  * Add some indicator in super classes that the methods are overridden
  * Optionally Add a hiararchy top to bottom.
+ * fix Map binding in method params.
