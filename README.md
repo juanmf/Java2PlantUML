@@ -139,6 +139,17 @@ by PlantUML as per the instructions in the generated script. A run over this pro
 
 ![java2Plant diagram should appear here..](/doc/java2Plant.png?raw=true "Java2Plant Collaboration")
 
+Note: the command used was: 
+```
+mvn   -Dparse.thePackage="com.github.juanmf.java2plant,\
+    com.github.juanmf.java2plant.goal.Parse, \
+    com.github.juanmf.java2plant.Parser, \
+    com.github.juanmf.java2plant.render.filters.Filters, \
+    com.github.juanmf.java2plant.render.PlantRenderer" \
+    clean compile java2PlantUML:parse
+```
+By including specific Class names, even if they are already included in specified packages, you get a note with 
+"Relevant Class" linked to it in the diagram
 
 TODO
 ====

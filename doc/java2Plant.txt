@@ -5,12 +5,189 @@
 left to right direction
 ' Participants 
 
-class com.github.juanmf.java2plant.util.TypesHelper {
--  REGEX_FOR_PACKAGE : c String
+class com.github.juanmf.java2plant.render.LollipopInterfaceListener {
 --
-+   TypesHelper() 
-+  getSimpleName(c String)  :  String
-+  loadClass(c String, c URLClassLoader)  :  Class
++   LollipopInterfaceListener()
++  handle(c RejectingBaseInterfaceEvent)  : void
+
+}
+class com.github.juanmf.java2plant.render.NotesRenderer {
+-  notesCounter : int
+~  NOTE_RELEVANT_CLASS : c String
+--
+~   NotesRenderer()
++  render(c StringBuilder, c String)  : void
++  render(c StringBuilder, c String, c String)  : void
+
+}
+class com.github.juanmf.java2plant.structure.Use {
++  RELATION_TYPE_USE : c String
+-  from :  Class<?>
+-  msg : c String
+-  originatingMember : i Member
+-  printedAsMember : boolean
+-  to : c String
+--
++   Use( Class<?>, c String, i Member)
++   Use( Class<?>, c String, i Member, c String)
++  getFromCardinal()  :  String
++  getFromType()  :  Class
++  getMessage()  :  String
++  getOriginatingMember()  :  Member
++  getPrintedAsMember()  : boolean
++  getRelationType()  :  String
++  getToCardinal()  :  String
++  getToType()  :  String
++  setPrintedAsMember(boolean)  : void
++  toString()  :  String
+
+}
+class com.github.juanmf.java2plant.structure.Extension {
++  RELATION_TYPE_EXTENSION : c String
+-  from :  Class<?>
+-  printedAsMember : boolean
+-  to : c String
+--
++   Extension( Class<?>, c String)
++  getFromCardinal()  :  String
++  getFromType()  :  Class
++  getMessage()  :  String
++  getOriginatingMember()  :  Member
++  getPrintedAsMember()  : boolean
++  getRelationType()  :  String
++  getToCardinal()  :  String
++  getToType()  :  String
++  setPrintedAsMember(boolean)  : void
++  toString()  :  String
+
+}
+interface com.google.common.base.Predicate <T extends c Object> {
+--
++  apply(T)  : boolean
++  equals(c Object)  : boolean
+
+}
+class com.github.juanmf.java2plant.Parser {
++  CLASS_LOADER : c URLClassLoader
+-  eventBus : c EventBus
+--
++   Parser()
+#  addAggregation( Set< Relation>,  Class<?>, c Field)  : void
+#  addAggregations( Set< Relation>,  Class<?>)  : void
+#  addConstructorUse( Set< Relation>,  Class<?>, i Type,  Constructor<?>)  : void
+#  addConstructorUses( Set< Relation>,  Class<?>,  Constructor<?>)  : void
+#  addExtensions( Set< Relation>,  Class<?>)  : void
+#  addFromTypeRelations( Set< Relation>,  Class<?>)  : void
+#  addImplementations( Set< Relation>,  Class<?>)  : void
+#  addMethodUse( Set< Relation>,  Class<?>, i Type, c Method)  : void
+#  addMethodUses( Set< Relation>,  Class<?>, c Method)  : void
+#  addUse( Set< Relation>,  Class<?>, i Type, i Member, c String)  : void
+#  addUses( Set< Relation>,  Class<?>)  : void
+#  getTypeParams(c Field)  :  Set
+#  getTypeParams(i ParameterizedType)  :  Set
+#  isMulti(i Type)  : boolean
++  getEventBus()  :  EventBus
++  parse(c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>)  :  String
++  parse(c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>,  List< ClassLoader>)  :  String
++  parse(c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>, c ClassLoader)  :  String
+-  addInterfaces( Class<?>,  Set< Class<?>>)  : void
+-  addSuperClass( Class<?>,  Set< Class<?>>)  : void
+-  addSuperClassesAndInterfaces( Set< Class<?>>)  : void
+-  getPackageTypes(c String,  Collection< URL>)  :  Collection
+-  getTypes(c String,  List< ClassLoader>)  :  Set
+-  getUrls( List< ClassLoader>)  :  Collection
+
+}
+class com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter <C extends  Class<?>> {
+--
++   ForbiddenRexegFilter( NotifierOnFiltering<C>)
++   ForbiddenRexegFilter()
+#  doSatisfy(C)  : boolean
+
+}
+enum com.github.juanmf.java2plant.render.PlantRenderer$Modifiers {
++  DEFAULT : c PlantRenderer$Modifiers
++  PRIVATE : c PlantRenderer$Modifiers
++  PROTECTED : c PlantRenderer$Modifiers
++  PUBLIC : c PlantRenderer$Modifiers
+~  prefix : c String
+--
+-   PlantRenderer$Modifiers(c String)
++  forModifier(int)  :  PlantRenderer$Modifiers
++  toString()  :  String
++  valueOf(c String)  :  PlantRenderer$Modifiers
++  values()  :  PlantRenderer$Modifiers;
+
+}
+enum com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts {
++  FROM : c RelationFieldsFilter$RelationParts
++  TO : c RelationFieldsFilter$RelationParts
+-  partExtractor : i RelationFieldsFilter$RelationParts$PartExtractor
+--
+-   RelationFieldsFilter$RelationParts(i RelationFieldsFilter$RelationParts$PartExtractor)
++  getType(i Relation)  :  Class
++  valueOf(c String)  :  RelationFieldsFilter$RelationParts
++  values()  :  RelationFieldsFilter$RelationParts;
+
+}
+interface org.apache.maven.plugin.ContextEnabled {
+--
++  getPluginContext()  :  Map
++  setPluginContext(i Map)  : void
+
+}
+enum com.github.juanmf.java2plant.render.filters.NotifierOnFiltering$OnResult {
++  FAILURE : c NotifierOnFiltering$OnResult
++  SUCCESS : c NotifierOnFiltering$OnResult
+~  result : boolean
+--
+-   NotifierOnFiltering$OnResult(boolean)
++  valueOf(c String)  :  NotifierOnFiltering$OnResult
++  values()  :  NotifierOnFiltering$OnResult;
+~  fire(boolean, i RenderEvent)  : void
+
+}
+class com.github.juanmf.java2plant.render.filters.AllowedRexegFilter <C extends  Class<?>> {
+#  allowedPatterns :  Set< Pattern>
+--
++   AllowedRexegFilter( NotifierOnFiltering<C>)
++   AllowedRexegFilter()
+#  doSatisfy(C)  : boolean
++  addAllowedItem(c Pattern)  : void
++  removeAllowedItem(c Pattern)  : boolean
+
+}
+class com.github.juanmf.java2plant.render.PlantRenderer$MethodPrinter {
+--
+~   PlantRenderer$MethodPrinter()
++  addMember(i Member,  List< String>)  : void
+-  buildParams(i Member)  :  String
+
+}
+interface com.github.juanmf.java2plant.structure.Relation {
+--
++  getFromCardinal()  :  String
++  getFromType()  :  Class
++  getMessage()  :  String
++  getOriginatingMember()  :  Member
++  getPrintedAsMember()  : boolean
++  getRelationType()  :  String
++  getToCardinal()  :  String
++  getToType()  :  String
++  setPrintedAsMember(boolean)  : void
++  toString()  :  String
+
+}
+class com.github.juanmf.java2plant.render.PlantRenderer$NullPrinter {
+--
+~   PlantRenderer$NullPrinter()
++  addMember(i Member,  List< String>)  : void
+
+}
+class com.github.juanmf.java2plant.Main {
+--
++   Main()
++  main(c String;)  : void
 
 }
 class com.github.juanmf.java2plant.render.filters.Filters {
@@ -40,16 +217,8 @@ class com.github.juanmf.java2plant.render.filters.Filters {
 -  FILTER_CHAIN_RELATION_CUSTOM :  ChainFilter< Relation>
 -  FILTER_CHAIN_RELATION_TYPE_CUSTOM :  ChainFilter< Class<? extends Relation>>
 --
-+   Filters() 
++   Filters()
 -  addFiltersToMap()  : void
-
-}
-class com.github.juanmf.java2plant.util.SaveFileHelper {
--  J2PUML : c String
---
-+   SaveFileHelper() 
-+  save(c StringBuilder, c String)  : void
--  getPathName(c String)  :  String
 
 }
 class com.github.juanmf.java2plant.structure.Aggregation {
@@ -61,8 +230,8 @@ class com.github.juanmf.java2plant.structure.Aggregation {
 -  toCardinal : c String
 -  toFieldName : c String
 --
-+   Aggregation( Class<?>, c String, i Member, c String) 
-+   Aggregation( Class<?>, c String, i Member, c String, c String) 
++   Aggregation( Class<?>, c String, i Member, c String)
++   Aggregation( Class<?>, c String, i Member, c String, c String)
 +  getFromCardinal()  :  String
 +  getFromType()  :  Class
 +  getMessage()  :  String
@@ -73,346 +242,14 @@ class com.github.juanmf.java2plant.structure.Aggregation {
 +  getToType()  :  String
 +  setPrintedAsMember(boolean)  : void
 +  toString()  :  String
-
-}
-enum com.github.juanmf.java2plant.render.PlantRenderer$Modifiers {
-+  DEFAULT : c PlantRenderer$Modifiers
-+  PRIVATE : c PlantRenderer$Modifiers
-+  PROTECTED : c PlantRenderer$Modifiers
-+  PUBLIC : c PlantRenderer$Modifiers
-~  prefix : c String
---
--   PlantRenderer$Modifiers(c String) 
-+  forModifier(int)  :  PlantRenderer$Modifiers
-+  toString()  :  String
-+  valueOf(c String)  :  PlantRenderer$Modifiers
-+  values()  :  PlantRenderer$Modifiers;
-
-}
-enum com.github.juanmf.java2plant.render.filters.NotifierOnFiltering$OnResult {
-+  FAILURE : c NotifierOnFiltering$OnResult
-+  SUCCESS : c NotifierOnFiltering$OnResult
-~  result : boolean
---
--   NotifierOnFiltering$OnResult(boolean) 
-+  valueOf(c String)  :  NotifierOnFiltering$OnResult
-+  values()  :  NotifierOnFiltering$OnResult;
-~  fire(boolean, i RenderEvent)  : void
-
-}
-class com.github.juanmf.java2plant.structure.Extension {
-+  RELATION_TYPE_EXTENSION : c String
--  from :  Class<?>
--  printedAsMember : boolean
--  to : c String
---
-+   Extension( Class<?>, c String) 
-+  getFromCardinal()  :  String
-+  getFromType()  :  Class
-+  getMessage()  :  String
-+  getOriginatingMember()  :  Member
-+  getPrintedAsMember()  : boolean
-+  getRelationType()  :  String
-+  getToCardinal()  :  String
-+  getToType()  :  String
-+  setPrintedAsMember(boolean)  : void
-+  toString()  :  String
-
-}
-class com.github.juanmf.java2plant.render.LollipopInterfaceListener {
---
-+   LollipopInterfaceListener() 
-+  handle(c RejectingBaseInterfaceEvent)  : void
-
-}
-class com.github.juanmf.java2plant.render.filters.NotifierOnFiltering <T extends c Object> {
--  event :  RenderEvent<T>
--  filter :  Filter<T>
--  notify : boolean
--  onResult : c NotifierOnFiltering$OnResult
---
-+   NotifierOnFiltering() 
-+   NotifierOnFiltering(c NotifierOnFiltering$OnResult,  RenderEvent<T>) 
-+  setFilter( Filter<T>)  : void
-~  getResultAndNotify(boolean, T, c StringBuilder)  : boolean
-
-}
-enum com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts {
-+  FROM : c RelationFieldsFilter$RelationParts
-+  TO : c RelationFieldsFilter$RelationParts
---
--   RelationFieldsFilter$RelationParts() 
-+  valueOf(c String)  :  RelationFieldsFilter$RelationParts
-+  values()  :  RelationFieldsFilter$RelationParts;
-
-}
-interface java.util.Comparator <T extends c Object> {
---
-+  compare(T, T)  : int
-+  equals(c Object)  : boolean
-
-}
-class org.apache.maven.plugin.AbstractMojo {
--  log : i Log
--  pluginContext : i Map
---
-+   AbstractMojo() 
-+  getLog()  :  Log
-+  getPluginContext()  :  Map
-+  setLog(i Log)  : void
-+  setPluginContext(i Map)  : void
-
-}
-interface org.apache.maven.plugin.Mojo {
-+  ROLE : c String
---
-+  execute()  : void
-+  getLog()  :  Log
-+  setLog(i Log)  : void
 
 }
 class com.github.juanmf.java2plant.render.filters.PredicateFilter <T extends c Object> {
 #  predicate :  Predicate<T>
--  notifier :  NotifierOnFiltering<T>
 --
-+   PredicateFilter( Predicate<T>) 
-+   PredicateFilter( Predicate<T>,  NotifierOnFiltering<T>) 
-+  satisfy(T, c StringBuilder)  : boolean
-
-}
-interface java.io.Serializable {
---
-
-}
-class com.github.juanmf.java2plant.render.filters.AllowedRexegFilter <C extends  Class<?>> {
-#  allowedPatterns :  Set< Pattern>
-#  notifier :  NotifierOnFiltering<C>
---
-+   AllowedRexegFilter( NotifierOnFiltering<C>) 
-+   AllowedRexegFilter() 
-+  addAllowedItem(c Pattern)  : void
-+  removeAllowedItem(c Pattern)  : boolean
-+  satisfy(C, c StringBuilder)  : boolean
--  doSatisfy(C)  : boolean
-
-}
-class com.github.juanmf.java2plant.render.event.RejectingBaseInterfaceEvent <T extends c Object> {
--  implementation : c Implementation
--  sb : c StringBuilder
---
-+   RejectingBaseInterfaceEvent() 
-+  getFilteringObject()  :  Object
-+  getScriptStringBuilder()  :  StringBuilder
-+  setFilteringObject(T)  : void
-+  setScriptStringBuilder(c StringBuilder)  : void
-
-}
-class com.github.juanmf.java2plant.Parser {
-+  CLASS_LOADER : c URLClassLoader
--  eventBus : c EventBus
---
-+   Parser() 
-#  addAggregation( Set< Relation>,  Class<?>, c Field)  : void
-#  addAggregations( Set< Relation>,  Class<?>)  : void
-#  addConstructorUse( Set< Relation>,  Class<?>, i Type,  Constructor<?>)  : void
-#  addConstructorUses( Set< Relation>,  Class<?>,  Constructor<?>)  : void
-#  addExtensions( Set< Relation>,  Class<?>)  : void
-#  addFromTypeRelations( Set< Relation>,  Class<?>)  : void
-#  addImplementations( Set< Relation>,  Class<?>)  : void
-#  addMethodUse( Set< Relation>,  Class<?>, i Type, c Method)  : void
-#  addMethodUses( Set< Relation>,  Class<?>, c Method)  : void
-#  addUse( Set< Relation>,  Class<?>, i Type, i Member, c String)  : void
-#  addUses( Set< Relation>,  Class<?>)  : void
-#  getTypeParams(c Field)  :  Set
-#  getTypeParams(i ParameterizedType)  :  Set
-#  isMulti(i Type)  : boolean
-+  getEventBus()  :  EventBus
-+  parse(c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>)  :  String
-+  parse(c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>,  List< ClassLoader>)  :  String
-+  parse(c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>, c ClassLoader)  :  String
--  addInterfaces( Class<?>,  Set< Class<?>>)  : void
--  addSuperClass( Class<?>,  Set< Class<?>>)  : void
--  addSuperClassesAndInterfaces( Set< Class<?>>)  : void
--  getPackageTypes(c String,  Collection< URL>)  :  Collection
--  getTypes(c String,  List< ClassLoader>)  :  Set
--  getUrls( List< ClassLoader>)  :  Collection
-
-}
-class com.github.juanmf.java2plant.render.PlantRenderer {
--  classesFilter :  Filter< Class<?>>
--  memberPrinters :  Map< Class<? extends Member>, PlantRenderer$MemberPrinter>
--  relations :  Set< Relation>
--  relationsFilter :  Filter< Relation>
--  relationsTypeFilter :  Filter< Class<? extends Relation>>
--  toTypesToShowAsMember :  Set< Pattern>
--  types :  Set< Class<?>>
---
-+   PlantRenderer( Set< Class<?>>,  Set< Relation>) 
-+   PlantRenderer( Set< Class<?>>,  Set< Relation>,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>) 
-#  addClass(c StringBuilder,  Class<?>)  : void
-#  addClasses(c StringBuilder)  : void
-#  addRelations(c StringBuilder)  : void
-+  render()  :  String
--  addClassTypeParams(c StringBuilder,  Class<?>)  : void
--  addMembers(c Member;,  List< String>)  : void
--  addRelation(c StringBuilder, i Relation)  : void
--  isToTypeInAggregations(i Relation)  : boolean
--  renderClassMembers(c StringBuilder,  Class<?>)  : void
--  sortRelations( ArrayList< Relation>)  : void
-
-}
-class com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter <C extends  Class<?>> {
---
-+   ForbiddenRexegFilter( NotifierOnFiltering<C>) 
-+   ForbiddenRexegFilter() 
-+  doSatisfy(C)  : boolean
-+  satisfy(C, c StringBuilder)  : boolean
-
-}
-interface org.apache.maven.plugin.ContextEnabled {
---
-+  getPluginContext()  :  Map
-+  setPluginContext(i Map)  : void
-
-}
-class com.github.juanmf.java2plant.structure.Use {
-+  RELATION_TYPE_USE : c String
--  from :  Class<?>
--  msg : c String
--  originatingMember : i Member
--  printedAsMember : boolean
--  to : c String
---
-+   Use( Class<?>, c String, i Member) 
-+   Use( Class<?>, c String, i Member, c String) 
-+  getFromCardinal()  :  String
-+  getFromType()  :  Class
-+  getMessage()  :  String
-+  getOriginatingMember()  :  Member
-+  getPrintedAsMember()  : boolean
-+  getRelationType()  :  String
-+  getToCardinal()  :  String
-+  getToType()  :  String
-+  setPrintedAsMember(boolean)  : void
-+  toString()  :  String
-
-}
-interface com.github.juanmf.java2plant.render.event.RenderEvent <T extends c Object> {
---
-+  getFilteringObject()  :  Object
-+  getScriptStringBuilder()  :  StringBuilder
-+  setFilteringObject(T)  : void
-+  setScriptStringBuilder(c StringBuilder)  : void
-
-}
-class com.github.juanmf.java2plant.render.filters.RelationFieldsFilter <T extends i Relation> {
--  filter :  Filter< Class<?>>
--  notifier :  NotifierOnFiltering<T>
--  part : c RelationFieldsFilter$RelationParts
---
-+   RelationFieldsFilter(c RelationFieldsFilter$RelationParts) 
-+   RelationFieldsFilter(c RelationFieldsFilter$RelationParts,  NotifierOnFiltering<T>) 
-+  satisfy(T, c StringBuilder)  : boolean
-+  setFilter( Filter< Class<?>>)  : void
--  apply( Class<?>, T, c StringBuilder)  : boolean
--  apply(c String, T, c StringBuilder)  : boolean
-
-}
-class com.github.juanmf.java2plant.render.PlantRenderer$MethodPrinter {
---
-~   PlantRenderer$MethodPrinter() 
-+  addMember(i Member,  List< String>)  : void
--  buildParams(i Member)  :  String
-
-}
-interface com.github.juanmf.java2plant.structure.Relation {
---
-+  getFromCardinal()  :  String
-+  getFromType()  :  Class
-+  getMessage()  :  String
-+  getOriginatingMember()  :  Member
-+  getPrintedAsMember()  : boolean
-+  getRelationType()  :  String
-+  getToCardinal()  :  String
-+  getToType()  :  String
-+  setPrintedAsMember(boolean)  : void
-+  toString()  :  String
-
-}
-class com.github.juanmf.java2plant.goal.Parse {
--  classesFilter : c String
--  customClassesFilter : c String
--  customRelationTypeFilter : c String
--  customRelationsFilter : c String
--  project : c MavenProject
--  relationTypeFilter : c String
--  relationsFilter : c String
--  thePackage : c String
---
-+   Parse() 
-+  execute()  : void
--  filterParamsSanityCheck()  : void
--  getLoader()  :  URLClassLoader
--  loadFilters(c ChainFilter, c String)  : void
--  prepareClassesFilter()  : void
--  prepareCustomFilters()  : void
--  prepareRelationTypeFilter()  : void
--  prepareRelationsFilter()  : void
-~  filterExists(c String)  : void
-
-}
-class com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter {
---
-~   PlantRenderer$FieldPrinter() 
-+  addMember(i Member,  List< String>)  : void
-
-}
-class com.github.juanmf.java2plant.render.filters.ChainFilter <T extends c Object> {
-~  filters :  Set< Filter<T>>
---
-+   ChainFilter() 
-+  addFilter( Filter<T>)  : boolean
-+  removeFilter( Filter<T>)  : boolean
-+  satisfy(T, c StringBuilder)  : boolean
-+  toString()  :  String
-
-}
-class com.github.juanmf.java2plant.structure.Implementation {
-+  RELATION_TYPE_IMPLEMENTATION : c String
-+  RELATION_TYPE_LOLLIPOP : c String
---
-+   Implementation( Class<?>, c String) 
-+  asLollipop()  :  String
-+  toString()  :  String
-
-}
-class com.github.juanmf.java2plant.render.filters.AllowedFilter <T extends c Object> {
-#  allowedItems :  Set<T>
-#  notifier :  NotifierOnFiltering<T>
---
-+   AllowedFilter( NotifierOnFiltering<T>) 
-+   AllowedFilter() 
-+  addItem(T)  : void
-+  removeItem(T)  : boolean
-+  satisfy(T, c StringBuilder)  : boolean
-
-}
-interface com.github.juanmf.java2plant.render.filters.Filter <T extends c Object> {
---
-+  satisfy(T, c StringBuilder)  : boolean
-
-}
-interface com.google.common.base.Predicate <T extends c Object> {
---
-+  apply(T)  : boolean
-+  equals(c Object)  : boolean
-
-}
-class com.github.juanmf.java2plant.render.filters.ForbiddenFilter <T extends c Object> {
---
-+   ForbiddenFilter( NotifierOnFiltering<T>) 
-+   ForbiddenFilter() 
-+  satisfy(T, c StringBuilder)  : boolean
++   PredicateFilter( Predicate<T>)
++   PredicateFilter( Predicate<T>,  NotifierOnFiltering<T>)
+#  doSatisfy(T)  : boolean
 
 }
 enum com.github.juanmf.java2plant.util.CanonicalName {
@@ -428,17 +265,163 @@ enum com.github.juanmf.java2plant.util.CanonicalName {
 -  className : c String
 -  code : c String
 --
--   CanonicalName(c String, c String) 
+-   CanonicalName(c String, c String)
 +  forCode(c String)  :  CanonicalName
 +  getClassName(c String)  :  String
 +  valueOf(c String)  :  CanonicalName
 +  values()  :  CanonicalName;
 
 }
-class com.github.juanmf.java2plant.render.PlantRenderer$NullPrinter {
+class com.github.juanmf.java2plant.structure.Implementation {
++  RELATION_TYPE_IMPLEMENTATION : c String
++  RELATION_TYPE_LOLLIPOP : c String
 --
-~   PlantRenderer$NullPrinter() 
++   Implementation( Class<?>, c String)
++  asLollipop()  :  String
++  toString()  :  String
+
+}
+interface org.apache.maven.plugin.Mojo {
++  ROLE : c String
+--
++  execute()  : void
++  getLog()  :  Log
++  setLog(i Log)  : void
+
+}
+class com.github.juanmf.java2plant.util.SaveFileHelper {
+-  J2PUML : c String
+--
++   SaveFileHelper()
++  save(c StringBuilder, c String)  : void
+-  getPathName(c String)  :  String
+
+}
+interface com.github.juanmf.java2plant.render.filters.Filter <T extends c Object> {
+--
++  satisfy(T, c StringBuilder)  : boolean
+
+}
+interface com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts$PartExtractor {
+--
++  extract(i Relation)  :  Class
+
+}
+class com.github.juanmf.java2plant.render.filters.NotifyingFilter <T extends c Object> {
+#  notifier :  NotifierOnFiltering<T>
+--
++   NotifyingFilter( NotifierOnFiltering<T>)
++   NotifyingFilter()
+#  doSatisfy(T)  : boolean
++  satisfy(T, c StringBuilder)  : boolean
+
+}
+class com.github.juanmf.java2plant.render.filters.ForbiddenFilter <T extends c Object> {
+--
++   ForbiddenFilter( NotifierOnFiltering<T>)
++   ForbiddenFilter()
+#  doSatisfy(T)  : boolean
+
+}
+class com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter {
+--
+~   PlantRenderer$FieldPrinter()
 +  addMember(i Member,  List< String>)  : void
+
+}
+interface java.util.Comparator <T extends c Object> {
+--
++  compare(T, T)  : int
++  comparing( Function<? super T, ? extends U>)  :  Comparator
++  comparing( Function<? super T, ? extends U>,  Comparator<? super U>)  :  Comparator
++  comparingDouble( ToDoubleFunction<? super T>)  :  Comparator
++  comparingInt( ToIntFunction<? super T>)  :  Comparator
++  comparingLong( ToLongFunction<? super T>)  :  Comparator
++  equals(c Object)  : boolean
++  naturalOrder()  :  Comparator
++  nullsFirst( Comparator<? super T>)  :  Comparator
++  nullsLast( Comparator<? super T>)  :  Comparator
++  reverseOrder()  :  Comparator
++  reversed()  :  Comparator
++  thenComparing( Comparator<? super T>)  :  Comparator
++  thenComparing( Function<? super T, ? extends U>)  :  Comparator
++  thenComparing( Function<? super T, ? extends U>,  Comparator<? super U>)  :  Comparator
++  thenComparingDouble( ToDoubleFunction<? super T>)  :  Comparator
++  thenComparingInt( ToIntFunction<? super T>)  :  Comparator
++  thenComparingLong( ToLongFunction<? super T>)  :  Comparator
+
+}
+class org.apache.maven.plugin.AbstractMojo {
+-  log : i Log
+-  pluginContext : i Map
+--
++   AbstractMojo()
++  getLog()  :  Log
++  getPluginContext()  :  Map
++  setLog(i Log)  : void
++  setPluginContext(i Map)  : void
+
+}
+class com.github.juanmf.java2plant.render.event.RejectingBaseInterfaceEvent <T extends c Object> {
+-  implementation : c Implementation
+-  sb : c StringBuilder
+--
++   RejectingBaseInterfaceEvent()
++  getFilteringObject()  :  Object
++  getScriptStringBuilder()  :  StringBuilder
++  setFilteringObject(T)  : void
++  setScriptStringBuilder(c StringBuilder)  : void
+
+}
+class com.github.juanmf.java2plant.goal.Parse {
+-  classesFilter : c String
+-  customClassesFilter : c String
+-  customRelationTypeFilter : c String
+-  customRelationsFilter : c String
+-  project : c MavenProject
+-  relationTypeFilter : c String
+-  relationsFilter : c String
+-  scanChildren : c Boolean
+-  thePackage : c String
+--
++   Parse()
++  execute()  : void
+-  filterParamsSanityCheck()  : void
+-  getLoader()  :  URLClassLoader
+-  loadFilters(c ChainFilter, c String)  : void
+-  prepareClassesFilter()  : void
+-  prepareCustomFilters()  : void
+-  prepareRelationTypeFilter()  : void
+-  prepareRelationsFilter()  : void
+~  filterExists(c String)  : void
+
+}
+class com.github.juanmf.java2plant.util.TypesHelper {
+-  REGEX_FOR_PACKAGE : c String
+--
++   TypesHelper()
++  getSimpleName(c String)  :  String
++  loadClass(c String, c URLClassLoader)  :  Class
++  splitPackages(c String)  :  List
+
+}
+interface com.github.juanmf.java2plant.render.event.RenderEvent <T extends c Object> {
+--
++  getFilteringObject()  :  Object
++  getScriptStringBuilder()  :  StringBuilder
++  setFilteringObject(T)  : void
++  setScriptStringBuilder(c StringBuilder)  : void
+
+}
+class com.github.juanmf.java2plant.render.filters.RelationFieldsFilter <T extends i Relation> {
+-  filter :  Filter< Class<?>>
+-  notifier :  NotifierOnFiltering<T>
+-  part : c RelationFieldsFilter$RelationParts
+--
++   RelationFieldsFilter(c RelationFieldsFilter$RelationParts)
++   RelationFieldsFilter(c RelationFieldsFilter$RelationParts,  NotifierOnFiltering<T>)
++  satisfy(T, c StringBuilder)  : boolean
++  setFilter( Filter< Class<?>>)  : void
 
 }
 interface com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter {
@@ -446,73 +429,132 @@ interface com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter {
 +  addMember(i Member,  List< String>)  : void
 
 }
-class com.github.juanmf.java2plant.Main {
+class com.github.juanmf.java2plant.render.filters.AllowedFilter <T extends c Object> {
+#  allowedItems :  Set<T>
 --
-+   Main() 
-+  main(c String;)  : void
++   AllowedFilter( NotifierOnFiltering<T>)
++   AllowedFilter()
+#  doSatisfy(T)  : boolean
++  addItem(T)  : void
++  removeItem(T)  : boolean
+
+}
+class com.github.juanmf.java2plant.render.PlantRenderer {
+-  classesFilter :  Filter< Class<?>>
+-  memberPrinters :  Map< Class<? extends Member>, PlantRenderer$MemberPrinter>
+-  notesRenderer : c NotesRenderer
+-  relations :  Set< Relation>
+-  relationsFilter :  Filter< Relation>
+-  relationsTypeFilter :  Filter< Class<? extends Relation>>
+-  relevantPackages : c String
+-  types :  Set< Class<?>>
+--
++   PlantRenderer( Set< Class<?>>,  Set< Relation>, c String)
++   PlantRenderer( Set< Class<?>>,  Set< Relation>, c String,  Filter< Class<? extends Relation>>,  Filter< Class<?>>,  Filter< Relation>)
+#  addClass(c StringBuilder,  Class<?>)  : void
+#  addClasses(c StringBuilder)  : void
+#  addRelations(c StringBuilder)  : void
++  render()  :  String
+-  addClassTypeParams(c StringBuilder,  Class<?>)  : void
+-  addMembers(c Member;,  List< String>)  : void
+-  addNotes(c StringBuilder)  : void
+-  addRelation(c StringBuilder, i Relation)  : void
+-  isToTypeInAggregations(i Relation)  : boolean
+-  renderClassMembers(c StringBuilder,  Class<?>)  : void
+-  sortRelations( ArrayList< Relation>)  : void
+
+}
+class com.github.juanmf.java2plant.render.filters.ChainFilter <T extends c Object> {
+~  filters :  Set< Filter<T>>
+--
++   ChainFilter()
++  addFilter( Filter<T>)  : boolean
++  removeFilter( Filter<T>)  : boolean
++  satisfy(T, c StringBuilder)  : boolean
++  toString()  :  String
+
+}
+class com.github.juanmf.java2plant.render.filters.NotifierOnFiltering <T extends c Object> {
+-  event :  RenderEvent<T>
+-  notify : boolean
+-  onResult : c NotifierOnFiltering$OnResult
+--
++   NotifierOnFiltering()
++   NotifierOnFiltering(c NotifierOnFiltering$OnResult,  RenderEvent<T>)
+~  getResultAndNotify(boolean, T, c StringBuilder)  : boolean
 
 }
 
-' Relations 
+' Relations
 
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_TYPE_CUSTOM:  ChainFilter< Class<? extends Relation>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_BASE: c RelationFieldsFilter
-com.github.juanmf.java2plant.render.filters.RelationFieldsFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : filter:  Filter< Class<?>>
-com.github.juanmf.java2plant.render.filters.RelationFieldsFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering  : notifier:  NotifierOnFiltering<T>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.PredicateFilter  : FILTER_RELATION_FORBID_AGGREGATION_FROM_PRIVATE:  PredicateFilter< Relation>
-com.github.juanmf.java2plant.Parser "1"  o-left-  "1" com.google.common.eventbus.EventBus  : eventBus: c EventBus
-com.github.juanmf.java2plant.render.filters.NotifierOnFiltering "1"  o-left-  "1" com.github.juanmf.java2plant.render.event.RenderEvent  : event:  RenderEvent<T>
-com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : relationsTypeFilter:  Filter< Class<? extends Relation>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_USES:  ForbiddenFilter< Class<? extends Relation>>
-com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : relationsFilter:  Filter< Relation>
-com.github.juanmf.java2plant.render.event.RejectingBaseInterfaceEvent "1"  o-left-  "1" com.github.juanmf.java2plant.structure.Implementation  : implementation: c Implementation
-com.github.juanmf.java2plant.render.filters.AllowedRexegFilter "1"  o-left-  "*" java.util.regex.Pattern  : allowedPatterns:  Set< Pattern>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_ALLOW_ALL: c RelationFieldsFilter
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_PRIMITIVES:  ForbiddenRexegFilter< Class<?>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_CLASSES_STANDARD:  ChainFilter< Class<?>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_FROM_BASE: c RelationFieldsFilter
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_BASE_CLASSES:  ForbiddenRexegFilter< Class<?>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_ALLOW_ALL_RELATIONS:  ForbiddenFilter< Class<? extends Relation>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_EXTENSION:  ForbiddenFilter< Class<? extends Relation>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_CUSTOM:  ChainFilter< Relation>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_CLASSES_CUSTOM:  ChainFilter< Class<?>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_TYPE_STANDARD:  ChainFilter< Class<? extends Relation>>
-com.github.juanmf.java2plant.render.filters.AllowedRexegFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering  : notifier:  NotifierOnFiltering<C>
-com.github.juanmf.java2plant.render.filters.AllowedFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering  : notifier:  NotifierOnFiltering<T>
-org.apache.maven.plugin.AbstractMojo "1"  o-left-  "1" org.apache.maven.plugin.logging.Log  : log: i Log
-com.github.juanmf.java2plant.goal.Parse "1"  o-left-  "1" org.apache.maven.project.MavenProject  : project: c MavenProject
 com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_STANDARD:  ChainFilter< Relation>
-com.github.juanmf.java2plant.render.filters.RelationFieldsFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts  : part: c RelationFieldsFilter$RelationParts
-com.github.juanmf.java2plant.render.filters.PredicateFilter "1"  o-left-  "1" com.google.common.base.Predicate  : predicate:  Predicate<T>
-com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : classesFilter:  Filter< Class<?>>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_FROM_ANONIMOUS: c RelationFieldsFilter
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_ANONIMOUS:  ForbiddenRexegFilter< Class<?>>
-com.github.juanmf.java2plant.render.filters.NotifierOnFiltering "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : filter:  Filter<T>
-com.github.juanmf.java2plant.Parser "1"  o-left-  "1" java.net.URLClassLoader  : CLASS_LOADER: c URLClassLoader
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_ALLOW_ALL_CLASSES:  ForbiddenFilter< Class<?>>
-com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "*" java.util.regex.Pattern  : toTypesToShowAsMember:  Set< Pattern>
-com.github.juanmf.java2plant.render.filters.NotifierOnFiltering "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering$OnResult  : onResult: c NotifierOnFiltering$OnResult
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_CLASSES_CUSTOM:  ChainFilter< Class<?>>
+com.github.juanmf.java2plant.render.event.RejectingBaseInterfaceEvent "1"  o-left-  "1" com.github.juanmf.java2plant.structure.Implementation  : implementation: c Implementation
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_CLASSES_STANDARD:  ChainFilter< Class<?>>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_TYPE_CUSTOM:  ChainFilter< Class<? extends Relation>>
 com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.PredicateFilter  : FILTER_FORBID_ENUM_AGGREGATION_LOOP:  PredicateFilter< Relation>
-com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_PRIMITIVE: c RelationFieldsFilter
-com.github.juanmf.java2plant.render.filters.PredicateFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering  : notifier:  NotifierOnFiltering<T>
+com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : relationsFilter:  Filter< Relation>
+com.github.juanmf.java2plant.goal.Parse "1"  o-left-  "1" org.apache.maven.project.MavenProject  : project: c MavenProject
+com.github.juanmf.java2plant.render.filters.NotifierOnFiltering "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering$OnResult  : onResult: c NotifierOnFiltering$OnResult
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_CUSTOM:  ChainFilter< Relation>
+com.github.juanmf.java2plant.Parser "1"  o-left-  "1" com.google.common.eventbus.EventBus  : eventBus: c EventBus
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_FROM_ANONIMOUS: c RelationFieldsFilter
+com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : relationsTypeFilter:  Filter< Class<? extends Relation>>
+com.github.juanmf.java2plant.Parser "1"  o-left-  "1" java.net.URLClassLoader  : CLASS_LOADER: c URLClassLoader
 com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_AGGREGATION:  ForbiddenFilter< Class<? extends Relation>>
-com.github.juanmf.java2plant.structure.Implementation  -up|>  com.github.juanmf.java2plant.structure.Extension
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_PRIMITIVES:  ForbiddenRexegFilter< Class<?>>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_PRIMITIVE: c RelationFieldsFilter
+com.github.juanmf.java2plant.render.filters.NotifyingFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering  : notifier:  NotifierOnFiltering<T>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ChainFilter  : FILTER_CHAIN_RELATION_TYPE_STANDARD:  ChainFilter< Class<? extends Relation>>
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : filter:  Filter< Class<?>>
+org.apache.maven.plugin.AbstractMojo "1"  o-left-  "1" org.apache.maven.plugin.logging.Log  : log: i Log
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts$PartExtractor  : partExtractor: i RelationFieldsFilter$RelationParts$PartExtractor
+com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.NotesRenderer  : notesRenderer: c NotesRenderer
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.PredicateFilter  : FILTER_RELATION_FORBID_AGGREGATION_FROM_PRIVATE:  PredicateFilter< Relation>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_ANONIMOUS:  ForbiddenRexegFilter< Class<?>>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  : FILTER_FORBID_BASE_CLASSES:  ForbiddenRexegFilter< Class<?>>
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.NotifierOnFiltering  : notifier:  NotifierOnFiltering<T>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_TO_BASE: c RelationFieldsFilter
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_USES:  ForbiddenFilter< Class<? extends Relation>>
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter$RelationParts  : part: c RelationFieldsFilter$RelationParts
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_FORBID_FROM_BASE: c RelationFieldsFilter
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_ALLOW_ALL_CLASSES:  ForbiddenFilter< Class<?>>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  : FILTER_RELATION_ALLOW_ALL: c RelationFieldsFilter
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_FORBID_EXTENSION:  ForbiddenFilter< Class<? extends Relation>>
+com.github.juanmf.java2plant.render.filters.NotifierOnFiltering "1"  o-left-  "1" com.github.juanmf.java2plant.render.event.RenderEvent  : event:  RenderEvent<T>
+com.github.juanmf.java2plant.render.filters.PredicateFilter "1"  o-left-  "1" com.google.common.base.Predicate  : predicate:  Predicate<T>
+com.github.juanmf.java2plant.render.filters.AllowedRexegFilter "1"  o-left-  "*" java.util.regex.Pattern  : allowedPatterns:  Set< Pattern>
+com.github.juanmf.java2plant.render.filters.Filters "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.ForbiddenFilter  : FILTER_ALLOW_ALL_RELATIONS:  ForbiddenFilter< Class<? extends Relation>>
+com.github.juanmf.java2plant.render.PlantRenderer "1"  o-left-  "1" com.github.juanmf.java2plant.render.filters.Filter  : classesFilter:  Filter< Class<?>>
 com.github.juanmf.java2plant.render.filters.ForbiddenRexegFilter  -up|>  com.github.juanmf.java2plant.render.filters.AllowedRexegFilter
+com.github.juanmf.java2plant.render.filters.AllowedFilter  -up|>  com.github.juanmf.java2plant.render.filters.NotifyingFilter
+com.github.juanmf.java2plant.render.filters.PredicateFilter  -up|>  com.github.juanmf.java2plant.render.filters.NotifyingFilter
+com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  -up|>  com.github.juanmf.java2plant.render.filters.NotifyingFilter
+com.github.juanmf.java2plant.structure.Implementation  -up|>  com.github.juanmf.java2plant.structure.Extension
 com.github.juanmf.java2plant.goal.Parse  -up|>  org.apache.maven.plugin.AbstractMojo
 com.github.juanmf.java2plant.render.filters.ForbiddenFilter  -up|>  com.github.juanmf.java2plant.render.filters.AllowedFilter
 com.github.juanmf.java2plant.render.event.RejectingBaseInterfaceEvent  ..up|>  com.github.juanmf.java2plant.render.event.RenderEvent
-com.github.juanmf.java2plant.structure.Use  ..up|>  com.github.juanmf.java2plant.structure.Relation
-com.github.juanmf.java2plant.render.filters.AllowedFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
 org.apache.maven.plugin.AbstractMojo  ..up|>  org.apache.maven.plugin.ContextEnabled
-com.github.juanmf.java2plant.render.filters.AllowedRexegFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
-com.github.juanmf.java2plant.render.filters.ChainFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
-org.apache.maven.plugin.AbstractMojo  ..up|>  org.apache.maven.plugin.Mojo
-com.github.juanmf.java2plant.structure.Extension  ..up|>  com.github.juanmf.java2plant.structure.Relation
-com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter  ..up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
-com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
-com.github.juanmf.java2plant.render.PlantRenderer$NullPrinter  ..up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
-com.github.juanmf.java2plant.structure.Aggregation  ..up|>  com.github.juanmf.java2plant.structure.Relation
-com.github.juanmf.java2plant.render.filters.PredicateFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.structure.Use  ..up|>  com.github.juanmf.java2plant.structure.Relation
 com.github.juanmf.java2plant.render.PlantRenderer$MethodPrinter  ..up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
+com.github.juanmf.java2plant.render.filters.ChainFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.structure.Aggregation  ..up|>  com.github.juanmf.java2plant.structure.Relation
+com.github.juanmf.java2plant.render.PlantRenderer$FieldPrinter  ..up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
+com.github.juanmf.java2plant.render.PlantRenderer$NullPrinter  ..up|>  com.github.juanmf.java2plant.render.PlantRenderer$MemberPrinter
+com.github.juanmf.java2plant.render.filters.RelationFieldsFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
+com.github.juanmf.java2plant.structure.Extension  ..up|>  com.github.juanmf.java2plant.structure.Relation
+org.apache.maven.plugin.AbstractMojo  ..up|>  org.apache.maven.plugin.Mojo
+com.github.juanmf.java2plant.render.filters.NotifyingFilter  ..up|>  com.github.juanmf.java2plant.render.filters.Filter
 org.apache.maven.plugin.ContextEnabled  .down.>  java.util.Map  : setPluginContext()
+
+' Notes
+
+Note "Relevant Class" as N1
+com.github.juanmf.java2plant.goal.Parse .. N1
+Note "Relevant Class" as N2
+com.github.juanmf.java2plant.Parser .. N2
+Note "Relevant Class" as N3
+com.github.juanmf.java2plant.render.filters.Filters .. N3
+Note "Relevant Class" as N4
+com.github.juanmf.java2plant.render.PlantRenderer .. N4
 @enduml
