@@ -135,7 +135,7 @@ Results
 =======
 
 The end result is a file named "j2puml+now+.puml" that you can process with [PlantUML online Render](http://plantuml.com/plantuml) 
-by PlantUML as per the instructions in the generated script. A run over this project renders:
+in order to get the UML diagram rendered by PlantUML as per the instructions in the generated script. A run over this project renders:
 
 ![java2Plant diagram should appear here..](/doc/java2Plant.png?raw=true "Java2Plant Collaboration")
 
