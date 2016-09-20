@@ -119,7 +119,7 @@ public class PlantRenderer {
 
         // TODO: Let´s decide if it is better to throw this exception so that we can log
         // with Maven (getLog()) to alert the User there was a problem creating
-        // the image file
+        // the PlantUML file
         try {
             SaveFileHelper.save(sb, TARGET_DIRECTORY);
         } catch (IOException e) {
