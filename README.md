@@ -93,7 +93,7 @@ If no Filtering options are given following Filters will be used
 
  To change them use:
 ```
- mvn   -Dparse.thePackage="p1" -Dparse.classesFilter="FILTER_FORBID_ANONIMOUS" clean compile java2PlantUML:parse
+ mvn   -Dparse.thePackage="p1" -Dparse.classesFilter="FILTER_FORBID_ANONYMOUS" clean compile java2PlantUML:parse
  mvn   -Dparse.thePackage="p1" -Dparse.relationTypeFilter="FILTER_FORBID_USES" clean compile java2PlantUML:parse
  mvn   -Dparse.thePackage="p1" -Dparse.relationsFilter="FILTER_RELATION_FORBID_TO_PRIMITIVE" clean compile java2PlantUML:parse
 ```
@@ -112,7 +112,7 @@ If no Filtering options are given following Filters will be used
 ``` 
   mvn -Dparse.thePackage="p1" \
       -Dparse.classesFilter="FILTER_CHAIN_CLASSES_CUSTOM" \
-      -Dparse.customClassesFilter="FILTER_FORBID_ANONIMOUS,FILTER_FORBID_PRIMITIVES" \
+      -Dparse.customClassesFilter="FILTER_FORBID_ANONYMOUS,FILTER_FORBID_PRIMITIVES" \
       clean compile java2PlantUML:parse
 
   mvn -Dparse.thePackage="p1" \
@@ -122,7 +122,7 @@ If no Filtering options are given following Filters will be used
 
   mvn -Dparse.thePackage="p1" \
       -Dparse.relationsFilter="FILTER_CHAIN_RELATION_TYPE_CUSTOM" \
-      -Dparse.customRelationsFilter="FILTER_RELATION_FORBID_TO_PRIMITIVE,FILTER_RELATION_FORBID_FROM_ANONIMOUS" \
+      -Dparse.customRelationsFilter="FILTER_RELATION_FORBID_TO_PRIMITIVE,FILTER_RELATION_FORBID_FROM_ANONYMOUS" \
       clean compile java2PlantUML:parse
 ```
 
