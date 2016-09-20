@@ -83,7 +83,7 @@ public class Filters {
     public static final RelationFieldsFilter FILTER_RELATION_FORBID_TO_PRIMITIVE;
     public static final RelationFieldsFilter FILTER_RELATION_FORBID_TO_BASE;
     public static final RelationFieldsFilter FILTER_RELATION_FORBID_FROM_BASE;
-    public static final RelationFieldsFilter FILTER_RELATION_FORBID_FROM_ANONIMOUS;
+    public static final RelationFieldsFilter FILTER_RELATION_FORBID_FROM_ANONYMOUS;
     public static final RelationFieldsFilter FILTER_RELATION_ALLOW_ALL;
 
     /**
@@ -98,7 +98,7 @@ public class Filters {
      * that corresponds to {@link com.github.juanmf.java2plant.goal.Parse#classesFilter}
      */
     public static final ForbiddenFilter<Class<?>> FILTER_ALLOW_ALL_CLASSES;
-    public static final ForbiddenRexegFilter<Class<?>> FILTER_FORBID_ANONIMOUS;
+    public static final ForbiddenRexegFilter<Class<?>> FILTER_FORBID_ANONYMOUS;
     public static final ForbiddenRexegFilter<Class<?>> FILTER_FORBID_PRIMITIVES;
     public static final ForbiddenRexegFilter<Class<?>> FILTER_FORBID_BASE_CLASSES;
 
@@ -122,7 +122,7 @@ public class Filters {
         FILTER_ALLOW_ALL_RELATIONS = new ForbiddenFilter<>();
         FILTER_ALLOW_ALL_CLASSES = new ForbiddenFilter<>();
 
-        FILTER_FORBID_ANONIMOUS = new ForbiddenRexegFilter();
+        FILTER_FORBID_ANONYMOUS = new ForbiddenRexegFilter();
         FILTER_FORBID_PRIMITIVES = new ForbiddenRexegFilter<>();
         FILTER_FORBID_BASE_CLASSES = new ForbiddenRexegFilter<>();
 
@@ -137,9 +137,9 @@ public class Filters {
         FILTER_RELATION_FORBID_TO_BASE = new RelationFieldsFilter(
                 RelationFieldsFilter.RelationParts.TO,
                 new NotifierOnFiltering(NotifierOnFiltering.OnResult.FAILURE, new RejectingBaseInterfaceEvent())
-            );
+        );
         FILTER_RELATION_FORBID_FROM_BASE = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
-        FILTER_RELATION_FORBID_FROM_ANONIMOUS = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
+        FILTER_RELATION_FORBID_FROM_ANONYMOUS = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
         FILTER_RELATION_ALLOW_ALL = new RelationFieldsFilter(RelationFieldsFilter.RelationParts.FROM);
 
         FILTER_FORBID_ENUM_AGGREGATION_LOOP = new PredicateFilter<>(new Predicate<Relation>() {
@@ -168,25 +168,25 @@ public class Filters {
         FILTER_FORBID_USES.addItem(Use.class);
         FILTER_FORBID_AGGREGATION.addItem(Aggregation.class);
         FILTER_FORBID_EXTENSION.addItem(Extension.class);
-        FILTER_FORBID_ANONIMOUS.addAllowedItem(Pattern.compile(".*\\$\\d.*"));
+        FILTER_FORBID_ANONYMOUS.addAllowedItem(Pattern.compile(".*\\$\\d.*"));
         FILTER_FORBID_PRIMITIVES.addAllowedItem(Pattern.compile("[^.]"));
         FILTER_FORBID_BASE_CLASSES.addAllowedItem(Pattern.compile("java\\.(lang|io)\\..*"));
 
         FILTER_RELATION_FORBID_TO_PRIMITIVE.setFilter(FILTER_FORBID_PRIMITIVES);
         FILTER_RELATION_FORBID_TO_BASE.setFilter(FILTER_FORBID_BASE_CLASSES);
         FILTER_RELATION_FORBID_FROM_BASE.setFilter(FILTER_FORBID_BASE_CLASSES);
-        FILTER_RELATION_FORBID_FROM_ANONIMOUS.setFilter(FILTER_FORBID_ANONIMOUS);
+        FILTER_RELATION_FORBID_FROM_ANONYMOUS.setFilter(FILTER_FORBID_ANONYMOUS);
         FILTER_RELATION_ALLOW_ALL.setFilter(FILTER_ALLOW_ALL_CLASSES);
 
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_TO_PRIMITIVE);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_TO_BASE);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_FROM_BASE);
-        FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_FROM_ANONIMOUS);
+        FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_RELATION_FORBID_FROM_ANONYMOUS);
         FILTER_CHAIN_RELATION_STANDARD.addFilter(FILTER_FORBID_ENUM_AGGREGATION_LOOP);
 
         FILTER_CHAIN_RELATION_TYPE_STANDARD.addFilter(FILTER_ALLOW_ALL_RELATIONS);
 
-        FILTER_CHAIN_CLASSES_STANDARD.addFilter(FILTER_FORBID_ANONIMOUS);
+        FILTER_CHAIN_CLASSES_STANDARD.addFilter(FILTER_FORBID_ANONYMOUS);
         FILTER_CHAIN_CLASSES_STANDARD.addFilter(FILTER_FORBID_BASE_CLASSES);
     }
 
@@ -199,14 +199,14 @@ public class Filters {
 
         // Classes Filters
         FILTERS.put("FILTER_ALLOW_ALL_CLASSES", FILTER_ALLOW_ALL_CLASSES);
-        FILTERS.put("FILTER_FORBID_ANONIMOUS", FILTER_FORBID_ANONIMOUS);
+        FILTERS.put("FILTER_FORBID_ANONIMOUS", FILTER_FORBID_ANONYMOUS);
         FILTERS.put("FILTER_FORBID_PRIMITIVES", FILTER_FORBID_PRIMITIVES);
         FILTERS.put("FILTER_FORBID_BASE_CLASSES", FILTER_FORBID_BASE_CLASSES);
 
         // Relations Filters
         FILTERS.put("FILTER_RELATION_FORBID_TO_PRIMITIVE", FILTER_RELATION_FORBID_TO_PRIMITIVE);
         FILTERS.put("FILTER_RELATION_FORBID_TO_BASE", FILTER_RELATION_FORBID_TO_BASE);
-        FILTERS.put("FILTER_RELATION_FORBID_FROM_ANONIMOUS", FILTER_RELATION_FORBID_FROM_ANONIMOUS);
+        FILTERS.put("FILTER_RELATION_FORBID_FROM_ANONIMOUS", FILTER_RELATION_FORBID_FROM_ANONYMOUS);
         FILTERS.put("FILTER_RELATION_ALLOW_ALL", FILTER_RELATION_ALLOW_ALL);
 
         FILTERS.put("FILTER_FORBID_ENUM_AGGREGATION_LOOP", FILTER_FORBID_ENUM_AGGREGATION_LOOP);

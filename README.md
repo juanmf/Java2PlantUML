@@ -134,7 +134,7 @@ from where class scanning will get the main classes of your Diagram, it can be a
 Results
 =======
 
-The end result is a file named "j2puml+now+.txt" that you can process with [PlantUML online Render](http://plantuml.com/plantuml) in order to get the UML diagram rendered 
+The end result is a file named "j2puml+now+.puml" that you can process with [PlantUML online Render](http://plantuml.com/plantuml) 
 by PlantUML as per the instructions in the generated script. A run over this project renders:
 
 ![java2Plant diagram should appear here..](/doc/java2Plant.png?raw=true "Java2Plant Collaboration")
