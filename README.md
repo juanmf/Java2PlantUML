@@ -93,7 +93,7 @@ If no Filtering options are given following Filters will be used
 
  To change them use:
 ```
- mvn   -Dparse.thePackage="p1" -Dparse.classesFilter="FILTER_FORBID_ANONIMOUS" clean compile java2PlantUML:parse
+ mvn   -Dparse.thePackage="p1" -Dparse.classesFilter="FILTER_FORBID_ANONYMOUS" clean compile java2PlantUML:parse
  mvn   -Dparse.thePackage="p1" -Dparse.relationTypeFilter="FILTER_FORBID_USES" clean compile java2PlantUML:parse
  mvn   -Dparse.thePackage="p1" -Dparse.relationsFilter="FILTER_RELATION_FORBID_TO_PRIMITIVE" clean compile java2PlantUML:parse
 ```
@@ -112,7 +112,7 @@ If no Filtering options are given following Filters will be used
 ``` 
   mvn -Dparse.thePackage="p1" \
       -Dparse.classesFilter="FILTER_CHAIN_CLASSES_CUSTOM" \
-      -Dparse.customClassesFilter="FILTER_FORBID_ANONIMOUS,FILTER_FORBID_PRIMITIVES" \
+      -Dparse.customClassesFilter="FILTER_FORBID_ANONYMOUS,FILTER_FORBID_PRIMITIVES" \
       clean compile java2PlantUML:parse
 
   mvn -Dparse.thePackage="p1" \
@@ -122,7 +122,7 @@ If no Filtering options are given following Filters will be used
 
   mvn -Dparse.thePackage="p1" \
       -Dparse.relationsFilter="FILTER_CHAIN_RELATION_TYPE_CUSTOM" \
-      -Dparse.customRelationsFilter="FILTER_RELATION_FORBID_TO_PRIMITIVE,FILTER_RELATION_FORBID_FROM_ANONIMOUS" \
+      -Dparse.customRelationsFilter="FILTER_RELATION_FORBID_TO_PRIMITIVE,FILTER_RELATION_FORBID_FROM_ANONYMOUS" \
       clean compile java2PlantUML:parse
 ```
 
@@ -134,8 +134,8 @@ from where class scanning will get the main classes of your Diagram, it can be a
 Results
 =======
 
-The end result is a file named "j2puml+now+.txt" that you can process with [PlantUML online Render](http://plantuml.com/plantuml) in order to get the UML diagram rendered 
-by PlantUML as per the instructions in the generated script. A run over this project renders:
+The end result is a file named "j2puml+now+.puml" that you can process with [PlantUML online Render](http://plantuml.com/plantuml) 
+in order to get the UML diagram rendered by PlantUML as per the instructions in the generated script. A run over this project renders:
 
 ![java2Plant diagram should appear here..](/doc/java2Plant.png?raw=true "Java2Plant Collaboration")
 

@@ -48,6 +48,9 @@ import org.apache.commons.lang3.StringUtils;
  * @author juanmf@gmail.com
  */
 public class PlantRenderer {
+
+    private static final String TARGET_DIRECTORY = "target"; // default target directory is what maven uses
+
     private static final Map<Class<? extends Member>, MemberPrinter> memberPrinters = new HashMap<>();
 
     private final Set<Class<?>> types;
@@ -72,7 +75,7 @@ public class PlantRenderer {
     public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, String relevantPackages) {
         this(types, relations, relevantPackages, Filters.FILTER_CHAIN_RELATION_TYPE_STANDARD, Filters.FILTER_CHAIN_CLASSES_STANDARD,
                 Filters.FILTER_CHAIN_RELATION_STANDARD
-            );
+        );
     }
 
     public PlantRenderer(Set<Class<?>> types, Set<Relation> relations, String relevantPackages, Filter<Class<? extends Relation>> relationTypeFilter,
@@ -89,7 +92,7 @@ public class PlantRenderer {
 
     /**
      * Render full contents
-     * 
+     *
      * <pre>
      *   * Classes
      *   * Relations
@@ -100,8 +103,8 @@ public class PlantRenderer {
     public String render() {
         StringBuilder sb = new StringBuilder();
         sb.append("@startuml\n").append("' Created by juanmf@gmail.com\n\n")
-              .append("' Using left to right direction to try a better layout feel free to edit\n")
-              .append("left to right direction\n");
+                .append("' Using left to right direction to try a better layout feel free to edit\n")
+                .append("left to right direction\n");
 
         sb.append("' Participants \n\n");
         addClasses(sb);
@@ -116,9 +119,9 @@ public class PlantRenderer {
 
         // TODO: Let´s decide if it is better to throw this exception so that we can log
         // with Maven (getLog()) to alert the User there was a problem creating
-        // the TXT file
+        // the PlantUML file
         try {
-            SaveFileHelper.save(sb, null);
+            SaveFileHelper.save(sb, TARGET_DIRECTORY);
         } catch (IOException e) {
             e.printStackTrace();
         }
