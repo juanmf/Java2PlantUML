@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.github.juanmf.java2plant.Parser;
 import com.github.juanmf.java2plant.render.filters.Filter;
@@ -49,6 +51,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class PlantRenderer {
 
+    private static final Logger logger = Logger.getLogger("Main");
     private static final String TARGET_DIRECTORY = "target"; // default target directory is what maven uses
 
     private static final Map<Class<? extends Member>, MemberPrinter> memberPrinters = new HashMap<>();
@@ -198,7 +201,7 @@ public class PlantRenderer {
     protected void addClasses(StringBuilder sb) {
         for (Class<?> c : types) {
             if (! classesFilter.satisfy(c, sb)){
-                System.out.println("ClassFilter rejected class " + c);
+                logger.log(Level.INFO, "ClassFilter rejected class " + c.getName());
                 continue;
             }
             addClass(sb, c);
@@ -267,7 +270,7 @@ public class PlantRenderer {
         public void addMember(Member m, List<String> plantMembers) {
             Field f = (Field) m;
             if (f.isSynthetic()) {
-                System.out.println("skiping synthetic" + f);
+                logger.log(Level.INFO, "skiping synthetic " + f);
                 return;
             }
 
@@ -282,7 +285,7 @@ public class PlantRenderer {
     static class NullPrinter implements MemberPrinter {
         @Override
         public void addMember(Member m, List<String> plantMembers) {
-            System.out.println(String.format("skipping member %s.", m));
+            logger.log(Level.INFO, String.format("skipping member %s.", m));
         }
     }
 
@@ -293,7 +296,7 @@ public class PlantRenderer {
         @Override
         public void addMember(Member m, List<String> plantMembers) {
             if (m.isSynthetic()) {
-                System.out.println("skiping synthetic" + m);
+                logger.log(Level.INFO, "skiping synthetic " + m);
                 return;
             }
             String name = TypesHelper.getSimpleName(m.getName());

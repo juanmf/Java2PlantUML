@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.github.juanmf.java2plant.structure.Implementation;
 import com.github.juanmf.java2plant.util.CanonicalName;
@@ -65,6 +67,7 @@ import com.github.juanmf.java2plant.structure.Use;
  */
 
 public class Parser {
+    private static final Logger logger = Logger.getLogger("Main");
     public static URLClassLoader CLASS_LOADER = null;
     private static final EventBus eventBus = new EventBus();
 
@@ -157,7 +160,7 @@ public class Parser {
             Class<?> aClass = TypesHelper.loadClass(type, CLASS_LOADER);
             boolean wantedElement = StringUtils.startsWith(type, packageToPase);
             if (null != aClass && wantedElement) {
-                System.out.println("looking up for type: " + type);
+                logger.log(Level.INFO, "looking up for type: " + type);
                 classes.add(aClass);
             }
         }
@@ -250,7 +253,7 @@ public class Parser {
     }
 
     protected static void addUse(Set<Relation> relations, Class<?> fromType, Type toType, Member m, String msg) {
-        String toName = toType.toString();
+        String toName = toType.getClass().getName();
         if (isMulti(toType)) {
             if (! ((Class) toType).isArray()) {
                 if (toType instanceof ParameterizedType) {
@@ -316,7 +319,7 @@ public class Parser {
         Set<String> typeVars = new HashSet<>();
         Type[] actualTypeArguments = f.getActualTypeArguments();
         for (Type t: actualTypeArguments) {
-            typeVars.add(t.toString().replace("class ", ""));
+            typeVars.add(t.getClass().getName());
         }
         return typeVars;
     }

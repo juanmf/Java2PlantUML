@@ -15,14 +15,16 @@
  */
 package com.github.juanmf.java2plant.util;
 
-import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author juanmf@gmail.com
  */
 public class TypesHelper {
+    private static final Logger logger = Logger.getLogger("Main");
     private static final String REGEX_FOR_PACKAGE = "((([ice])(nterface|lass|num))? ?([\\w\\[][_\\w\\d\\$]+\\.)+)";
 
     /**
@@ -41,21 +43,23 @@ public class TypesHelper {
         return fqcn.replaceAll(REGEX_FOR_PACKAGE, "$3 ");
     }
 
-    public static Class<?> loadClass(String type, URLClassLoader classLoader) {
+    public static Class<?> loadClass(String type, ClassLoader classLoader) {
         try {
             return Class.forName(type, true, classLoader);
         } catch (ClassNotFoundException|NoClassDefFoundError|ExceptionInInitializerError|UnsatisfiedLinkError e) {
-            System.out.println(String.format(
-                    "Issues loading type %s. \n  Throwed: %s: %s. \n  With Loader: %s", type, e.getClass().getName(),
-                    e.getMessage(), null == classLoader ? "null" : classLoader.getClass().getName()
-                ));
 
-            if (null != classLoader) {
-                return loadClass(type, null);
+            ClassLoader cl = ClassLoader.getSystemClassLoader();
+            if (cl != classLoader) {
+                return loadClass(type, ClassLoader.getSystemClassLoader());
+            } else {
+                logger.log(Level.WARNING, String.format(
+                        "Issues loading type %s. \n  Throwed: %s: %s. \n  With Loader: %s", type, e.getClass().getName(),
+                        e.getMessage(), null == classLoader ? "null" : classLoader.getClass().getName()
+                    ), e);
             }
         } catch (Exception e) {
-            System.out.println(String.format(
-                    "Unhandled Exception while loading %s!! %s: %s", type, e.getClass().getName(), e.getMessage())
+            logger.log(Level.SEVERE, String.format(
+                    "Unhandled Exception while loading %s!! %s: %s", type, e.getClass().getName(), e.getMessage()), e
                 );
             throw e;
         }

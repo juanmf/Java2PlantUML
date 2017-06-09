@@ -66,10 +66,10 @@ import static com.github.juanmf.java2plant.render.filters.Filters.FILTERS;
  * 
  * Available filter names and types are defined in {@link com.github.juanmf.java2plant.render.filters.Filters#FILTERS} Map
  * Read {@link com.github.juanmf.java2plant.render.filters.Filters} javadoc to understand the three types of filters
- * yuio can use.
+ * you can use.
  * 
  * Custom filters usage:
- * You can use a custom chain filter for each of the three types of filters, combining any of the exisitng filters
+ * You can use a custom chain filter for each of the three types of filters, combining any of the existing filters
  * without the need to code.
  * <pre>
  *  mvn -Dparse.thePackage="p1" \

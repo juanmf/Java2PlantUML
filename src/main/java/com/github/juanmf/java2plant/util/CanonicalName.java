@@ -73,7 +73,7 @@ public enum CanonicalName {
             return code;
         }
         if (cn.equals(CanonicalName.L)) {
-            return code.replace(cn.code, "");
+            return code.replace(cn.code, "").replace(";", "");
         }
         return cn.className;
     }
