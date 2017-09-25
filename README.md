@@ -47,6 +47,14 @@ at this project's pom Directory and run
 mvn clean install
 ```
 
+Then add the plugin gropu to your ~/.m2/settings.xml
+
+```xml
+  <pluginGroups>
+    <pluginGroup>com.github.juanmf</pluginGroup>
+  </pluginGroups>
+```
+
 Usage
 =====
 
@@ -57,6 +65,7 @@ Step at your project's pom directory and then play around with CLI options
  mvn   -Dparse.thePackage="com.my.package, com.other.package" clean compile java2PlantUML:parse
  mvn   -Dparse.thePackage="com.my.package, com.other.Class" clean compile java2PlantUML:parse
 ```
+
 
 Usage of Filters 
 ----------------
