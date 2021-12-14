@@ -74,46 +74,46 @@ public class Parser {
     /**
      * Parse the given package recursively, then iterates over found types to fetch their relations.
      *
-     * @param packageToPase The root package to be parsed.
+     * @param packageToParse The root package to be parsed.
      *
      * @return PlantUML src code of a Collaboration Diagram for the types found in package and all
      * related Types.
      */
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
+    public static String parse(String packageToParse, Filter<Class<? extends Relation>> relationTypeFilter,
                                Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter) throws ClassNotFoundException
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
 
-        return parse(packageToPase, relationTypeFilter, classesFilter, relationsFilter, classLoadersList);
+        return parse(packageToParse, relationTypeFilter, classesFilter, relationsFilter, classLoadersList);
     }
 
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
+    public static String parse(String packageToParse, Filter<Class<? extends Relation>> relationTypeFilter,
                                Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter, ClassLoader classLoader)
     {
         List<ClassLoader> classLoadersList = new LinkedList<>();
         classLoadersList.add(classLoader);
-        return parse(packageToPase, relationTypeFilter, classesFilter, relationsFilter, classLoadersList);
+        return parse(packageToParse, relationTypeFilter, classesFilter, relationsFilter, classLoadersList);
     }
 
-    public static String parse(String packageToPase, Filter<Class<? extends Relation>> relationTypeFilter,
+    public static String parse(String packageToParse, Filter<Class<? extends Relation>> relationTypeFilter,
                                Filter<Class<?>> classesFilter, Filter<Relation> relationsFilter, List<ClassLoader> classLoadersList)
     {
         Set<Relation> relations = new HashSet<Relation>();
-        Set<Class<?>> classes = getTypes(packageToPase, classLoadersList);
+        Set<Class<?>> classes = getTypes(packageToParse, classLoadersList);
         for (Class<?> aClass : classes) {
             addFromTypeRelations(relations, aClass);
         }
-        return new PlantRenderer(classes, relations, packageToPase, relationTypeFilter, classesFilter, relationsFilter).render();
+        return new PlantRenderer(classes, relations, packageToParse, relationTypeFilter, classesFilter, relationsFilter).render();
     }
 
     public static EventBus getEventBus() {
         return eventBus;
     }
 
-    private static Set<Class<?>> getTypes(String packageToPase, List<ClassLoader> classLoadersList) {
+    private static Set<Class<?>> getTypes(String packageToParse, List<ClassLoader> classLoadersList) {
         Collection<URL> urls = getUrls(classLoadersList);
         Set<Class<?>> classes = new HashSet<>();
-        for (String aPackage : TypesHelper.splitPackages(packageToPase)) {
+        for (String aPackage : TypesHelper.splitPackages(packageToParse)) {
             classes.addAll(getPackageTypes(aPackage, urls));
         }
         addSuperClassesAndInterfaces(classes);
@@ -147,24 +147,40 @@ public class Parser {
         addInterfaces(superclass, newClasses);
     }
 
-    private static Collection<? extends Class<?>> getPackageTypes(String packageToPase, Collection<URL> urls) {
+    private static Collection<? extends Class<?>> getPackageTypes(String packageToParse, Collection<URL> urls) {
         Set<Class<?>> classes = new HashSet<>();
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner(false /* exclude Object.class */), new ResourcesScanner(), new TypeElementsScanner())
                 .setUrls(urls)
-                .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageToPase)).exclude("java.*")));
+                .filterInputsBy(new FilterBuilder().include(".*").exclude("java.*")));
 
         Set<String> types;
         types = reflections.getStore().get("TypeElementsScanner").keySet();
         for (String type: types) {
+            if (! StringUtils.startsWith(type, packageToParse)) {
+                continue;
+            }
             Class<?> aClass = TypesHelper.loadClass(type, CLASS_LOADER);
-            boolean wantedElement = StringUtils.startsWith(type, packageToPase);
-            if (null != aClass && wantedElement) {
+            if (type.equals(packageToParse)) {
+                // They requested the class, loading its hierarchy
+                logger.log(Level.INFO, "loading exact match and subtypes & super types: " + type);
+                loadClassFamily(aClass, classes, reflections);
+            } else if (null != aClass) {
                 logger.log(Level.INFO, "looking up for type: " + type);
                 classes.add(aClass);
             }
         }
         return classes;
+    }
+
+    private static void loadClassFamily(Class<?> aClass, Set<Class<?>> classes, Reflections reflections) {
+        // Super classes and interfaces are added for any class already.
+        classes.add(aClass);
+        loadSubClasses(aClass, classes, reflections);
+    }
+
+    private static void loadSubClasses(Class<?> aClass, Set<Class<?>> classes, Reflections reflections) {
+        classes.addAll(reflections.getSubTypesOf((Class<Object>) aClass));
     }
 
     private static Collection<URL> getUrls(List<ClassLoader> classLoadersList) {
