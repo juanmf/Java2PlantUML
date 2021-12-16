@@ -25,7 +25,7 @@ import com.github.juanmf.java2plant.structure.Implementation;
  */
 public class RejectingBaseInterfaceEvent<T> implements RenderEvent<T> {
     /**
-     * The StringBuilder {@link PlantRenderer#render()} is using to writ the plant UML script.
+     * The StringBuilder {@link PlantRenderer#render()} is using to write the plant UML script.
      */
     private StringBuilder sb;
 

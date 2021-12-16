@@ -168,7 +168,7 @@ public class Filters {
         FILTER_FORBID_USES.addItem(Use.class);
         FILTER_FORBID_AGGREGATION.addItem(Aggregation.class);
         FILTER_FORBID_EXTENSION.addItem(Extension.class);
-        FILTER_FORBID_ANONYMOUS.addAllowedItem(Pattern.compile(".*\\$\\d.*"));
+        FILTER_FORBID_ANONYMOUS.addAllowedItem(Pattern.compile(".*\\$.*"));
         FILTER_FORBID_PRIMITIVES.addAllowedItem(Pattern.compile("[^.]"));
         FILTER_FORBID_BASE_CLASSES.addAllowedItem(Pattern.compile("java\\.(lang|io)\\..*"));
 

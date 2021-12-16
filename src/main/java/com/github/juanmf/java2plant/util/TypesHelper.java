@@ -15,8 +15,11 @@
  */
 package com.github.juanmf.java2plant.util;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +29,16 @@ import java.util.logging.Logger;
 public class TypesHelper {
     private static final Logger logger = Logger.getLogger("Main");
     private static final String REGEX_FOR_PACKAGE = "((([ice])(nterface|lass|num))? ?([\\w\\[][_\\w\\d\\$]+\\.)+)";
+    private static final Map<String, Class<?>> BOXING_TYPES_FOR_PRIMITIVES = ImmutableMap.<String, Class<?>>builder()
+            .put("boolean", Boolean.class)
+            .put("byte", Byte.class)
+            .put("short", Short.class)
+            .put("int", Integer.class)
+            .put("long" , Long.class)
+            .put("float" , Float.class)
+            .put("double" , Double.class)
+            .put("char" , Character.class)
+            .build();
 
     /**
      * Should return a decent short version of the FQCN given:
@@ -45,7 +58,12 @@ public class TypesHelper {
 
     public static Class<?> loadClass(String type, ClassLoader classLoader) {
         try {
-            return Class.forName(type, true, classLoader);
+            if (isPackage(type)) {
+                return null;
+            }
+            return BOXING_TYPES_FOR_PRIMITIVES.containsKey(type)
+                    ? BOXING_TYPES_FOR_PRIMITIVES.get(type)
+                    : Class.forName(type, true, classLoader);
         } catch (ClassNotFoundException|NoClassDefFoundError|ExceptionInInitializerError|UnsatisfiedLinkError e) {
 
             ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -64,6 +82,10 @@ public class TypesHelper {
             throw e;
         }
         return null;
+    }
+
+    private static boolean isPackage(String type) {
+        return Package.getPackage(type) != null;
     }
 
     /**
